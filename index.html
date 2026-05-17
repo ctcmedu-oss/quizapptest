@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>測試用--文教長期義工檢定刷題系統</title>
+    <title>文教長期義工檢定刷題系統</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
       /* 🌟 全域最小字級設定為 28px */
@@ -165,17 +165,31 @@
         display: flex; align-items: center; padding: 15px 20px; 
         border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
       }
-      .v-stair-icon { font-size: 42px; margin-right: 20px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); }
+      /* ⭐ 針對客製化徽章圖片優化的樣式 */
+      .v-stair-icon { 
+        margin-right: 20px; 
+        flex-shrink: 0; /* 防止圖片被壓縮 */
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        width: 100px; /* ⭐ 設定圖片容器寬度，讓文字對齊 */
+      }
+      .v-stair-icon img { 
+  		width: 100px;
+  		height: auto;
+  		/* ⭐ X和Y都設定偏移，形成右下角的斜角陰影 */
+  		filter: drop-shadow(6px 6px 5px rgba(0,0,0,0.3)); 
+  	  }
       .v-stair-info { display: flex; flex-direction: column; text-align: left; line-height: 1.3;}
       .v-stair-name { font-size: 32px; font-weight: bold; margin-bottom: 5px;}
       .v-stair-score { font-size: 24px; font-weight: bold; opacity: 0.9; }
       
-      /* 利用寬度遞減製造階梯感，並調整文字顏色以利閱讀 */
-      .v-bar-diamond { background: linear-gradient(90deg, #2980b9, #85c1e9); width: 100%; color: white; }
-      .v-bar-gold    { background: linear-gradient(90deg, #e67e22, #f5cba7); width: 90%; color: white; }
-      .v-bar-silver  { background: linear-gradient(90deg, #95a5a6, #d5d8dc); width: 80%; color: white; }
-      .v-bar-bronze  { background: linear-gradient(90deg, #d35400, #edbb99); width: 70%; color: white; }
-      .v-bar-star    { background: linear-gradient(90deg, #f1c40f, #f9e79f); width: 60%; color: #333; }
+      /* 利用寬度遞減製造階梯感，並配合淺底色將文字統一改為深灰色以利閱讀 */
+      .v-bar-diamond { background-color: #d9e4ff; width: 100%; color: #333; }
+      .v-bar-gold    { background-color: #faf26c; width: 90%; color: #333; }
+      .v-bar-silver  { background-color: #e6f7f3; width: 80%; color: #333; }
+      .v-bar-bronze  { background-color: #ffeac2; width: 70%; color: #333; }
+      .v-bar-star    { background-color: #ffe0ea; width: 60%; color: #333; }
 		
       .legend-warning { color: #e74c3c; font-weight: bold; font-size: 28px; text-align: center; margin: 35px 0 0 0; background: #fdf3f2; padding: 20px; border-radius: 12px; border: 2px dashed #fadbd8; }
       
@@ -238,7 +252,7 @@
           <img src="https://drive.google.com/thumbnail?id=1GljeFo0Y9LItrY7ioFb5R3IOT4LZYLye&sz=w800" alt="2026文教長期義工檢定刷題系統" class="hero-image">
         </div>
         <div class="login-form-wrapper">
-          <h2>測試用--義工檢定刷題系統</h2>
+          <h2>義工檢定刷題系統</h2>
           <input type="text" id="vName" placeholder="請輸入姓名">
           <input type="text" id="vId" placeholder="請輸入義工編號">
           <button onclick="login()">登入系統</button>
@@ -284,7 +298,7 @@
     </div>
 
     <script>
-      const API_URL = "https://script.google.com/macros/s/AKfycbxkxjtc8IHNmDMYceAvCZH_-rArfRX3khXMqFx6pwreQbxq-T3PImva40OuzX9XQf_l/exec"; 
+      const API_URL = "https://script.google.com/macros/s/AKfycbzR0nxw4mkxT1JkA4w2nQBsRJ0qIVISkz_pu7_hws0ULiksWvyiB_ivIls2dIRQmQm5/exec"; 
 
       const SCORING_RULES_HTML = `
       <div style="background-color: #f8f9fa; border-left: 8px solid #3498db; padding: 25px 30px; margin: 0 0 35px 0; border-radius: 8px; text-align: left; font-size: 28px; line-height: 1.6; color: #2c3e50; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
@@ -495,24 +509,28 @@
               <h4>刷題里程徽章級別</h4>
               <div class="v-staircase-wrapper">
                 <div class="v-stair-row v-bar-star">
-                  <div class="v-stair-icon">⭐</div>
-                  <div class="v-stair-info"><div class="v-stair-name">新星</div><div class="v-stair-score">1499分以下</div></div>
+                  <div class="v-stair-icon"><img src="https://drive.google.com/thumbnail?id=16llBhrcNy0VO0_0yvELk7StxXRTl7xts&sz=w300" alt="新星"></div>
+                  <div class="v-stair-info"><div class="v-stair-name">新星</div><div class="v-stair-score">4500分以下</div></div>
                 </div>
+
                 <div class="v-stair-row v-bar-bronze">
-                  <div class="v-stair-icon">🥉</div>
-                  <div class="v-stair-info"><div class="v-stair-name">銅牌</div><div class="v-stair-score">1500 ~ 5999分</div></div>
+                  <div class="v-stair-icon"><img src="https://drive.google.com/thumbnail?id=19XDvL8SIKN8zBnGIe-KIkxPgcN3ygK52&sz=w300" alt="銅牌"></div>
+                  <div class="v-stair-info"><div class="v-stair-name">銅牌</div><div class="v-stair-score">4501 ~ 7500分</div></div>
                 </div>
+
                 <div class="v-stair-row v-bar-silver">
-                  <div class="v-stair-icon">🥈</div>
-                  <div class="v-stair-info"><div class="v-stair-name">銀牌</div><div class="v-stair-score">6000 ~ 10499分</div></div>
+                  <div class="v-stair-icon"><img src="https://drive.google.com/thumbnail?id=1B4WFnY7C5M5PDj1NBnTH7sS81j625p9H&sz=w300" alt="銀牌"></div>
+                  <div class="v-stair-info"><div class="v-stair-name">銀牌</div><div class="v-stair-score">7501 ~ 10500分</div></div>
                 </div>
+
                 <div class="v-stair-row v-bar-gold">
-                  <div class="v-stair-icon">🥇</div>
-                  <div class="v-stair-info"><div class="v-stair-name">金牌</div><div class="v-stair-score">10500 ~ 14999分</div></div>
+                  <div class="v-stair-icon"><img src="https://drive.google.com/thumbnail?id=1nbUIdxqEw1BDl4GmBGSA_iUo12p77CTR&sz=w300" alt="金牌"></div>
+                  <div class="v-stair-info"><div class="v-stair-name">金牌</div><div class="v-stair-score">10501 ~ 15000分</div></div>
                 </div>
+
                 <div class="v-stair-row v-bar-diamond">
-                  <div class="v-stair-icon">💎</div>
-                  <div class="v-stair-info"><div class="v-stair-name">鑽石</div><div class="v-stair-score">15000分以上</div></div>
+                  <div class="v-stair-icon"><img src="https://drive.google.com/thumbnail?id=1T3KZ5YhBfdTgUxEAUvT9TXPvG6iZoEHl&sz=w300" alt="鑽石"></div>
+                  <div class="v-stair-info"><div class="v-stair-name">鑽石</div><div class="v-stair-score">15001分以上</div></div>
                 </div>
               </div>
               <p class="legend-warning">⚠️ 積分統計至 8/31 截止</p>
@@ -527,12 +545,18 @@
                  let sortedWeeks = Object.keys(history[subj]).sort((a,b) => parseInt(a.replace(/\D/g,'')) - parseInt(b.replace(/\D/g,'')));
                  let subjectTotalScore = 0;
                  sortedWeeks.forEach(week => { subjectTotalScore += parseInt(history[subj][week].score) || 0; });
-                 let milestoneText = "";
-                 if (subjectTotalScore >= 15000) milestoneText = "💎 鑽石級別 (15000分以上)"; 
-                 else if (subjectTotalScore >= 10500) milestoneText = "🥇 金牌級別 (10500~14999分)"; 
-                 else if (subjectTotalScore >= 6000) milestoneText = "🥈 銀牌級別 (6000~10499分)"; 
-                 else if (subjectTotalScore >= 1500) milestoneText = "🥉 銅牌級別 (1500~5999分)"; 
-                 else milestoneText = "⭐ 新星級別 (1499分以下)";
+                 // ⭐ 更新積分查詢的里程碑計算與級距
+                 let milestoneIconStyle = "width: 100px; height: auto; vertical-align: middle; margin-right: 15px; filter: drop-shadow(6px 6px 5px rgba(0,0,0,0.3));"; 
+
+                 let milestoneText = subjectTotalScore >= 15001 
+                   ? `<img src="https://drive.google.com/thumbnail?id=1T3KZ5YhBfdTgUxEAUvT9TXPvG6iZoEHl&sz=w300" style="${milestoneIconStyle}" alt="鑽石"> 鑽石級別 (15001分以上)`
+                   : (subjectTotalScore >= 10501 
+                       ? `<img src="https://drive.google.com/thumbnail?id=1nbUIdxqEw1BDl4GmBGSA_iUo12p77CTR&sz=w300" style="${milestoneIconStyle}" alt="金牌"> 金牌級別 (10501~15000分)` 
+                       : (subjectTotalScore >= 7501 
+                           ? `<img src="https://drive.google.com/thumbnail?id=1B4WFnY7C5M5PDj1NBnTH7sS81j625p9H&sz=w300" style="${milestoneIconStyle}" alt="銀牌"> 銀牌級別 (7501~10500分)`
+                           : (subjectTotalScore >= 4501 
+                               ? `<img src="https://drive.google.com/thumbnail?id=19XDvL8SIKN8zBnGIe-KIkxPgcN3ygK52&sz=w300" style="${milestoneIconStyle}" alt="銅牌"> 銅牌級別 (4501~7500分)` 
+                               : `<img src="https://drive.google.com/thumbnail?id=16llBhrcNy0VO0_0yvELk7StxXRTl7xts&sz=w300" style="${milestoneIconStyle}" alt="新星"> 新星級別 (4500分以下)`)));
                  let subjIcon = subj === '攝影' ? '📷' : '📝';
                  tablesHtml += "<h3 style='color:#2c3e50; margin-top:30px; border-bottom:3px solid #eee; padding-bottom:15px; font-size: 36px;'>" + subjIcon + " " + subj + " 檢定紀錄</h3>";
                  let themeClass = subj === '攝影' ? 'theme-photo' : '';
@@ -692,6 +716,7 @@
           results.push({ questionId: q.id, userAnswer: ansValue, isCorrect: isCorrect });
 
           const displayLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
           let correctAnsObjArr = [];
           dbAnswerStr.split(',').forEach(function(k) { 
               if(q.options && q.options[k]) {
@@ -710,13 +735,13 @@
           let keysToRender = q.shuffledKeys || ['A', 'B', 'C', 'D', 'E'].filter(k => q.options && q.options[k]);
           
           keysToRender.forEach(function(key, idx) {
-                 let displayLabel = displayLetters[idx];
-                 let isSelected = userSelectedArr.includes(key);
-                 let checkedAttr = isSelected ? "checked" : "";
-                 let isOptionCorrect = dbAnswerStr.split(',').includes(key);
-                 let labelStyle = "display: flex; align-items: flex-start; padding: 12px 0; cursor: default;" + (isOptionCorrect ? " color: #27ae60; font-weight: bold;" : (isSelected ? " color: #e74c3c; font-weight: bold;" : ""));
-                 if (isSelected) labelStyle += " background-color: #f1f2f6; padding: 12px 18px; margin: 4px -18px; border-radius: 10px;";
-                 html += "<label style='" + labelStyle + "'><div class='opt-prefix'><input type='" + inputType + "' disabled " + checkedAttr + "> " + displayLabel + ". </div><div class='opt-text'>" + q.options[key] + "</div></label>";
+                  let displayLabel = displayLetters[idx];
+                  let isSelected = userSelectedArr.includes(key);
+                  let checkedAttr = isSelected ? "checked" : "";
+                  let isOptionCorrect = dbAnswerStr.split(',').includes(key);
+                  let labelStyle = "display: flex; align-items: flex-start; padding: 12px 0; cursor: default;" + (isOptionCorrect ? " color: #27ae60; font-weight: bold;" : (isSelected ? " color: #e74c3c; font-weight: bold;" : ""));
+                  if (isSelected) labelStyle += " background-color: #f1f2f6; padding: 12px 18px; margin: 4px -18px; border-radius: 10px;";
+                  html += "<label style='" + labelStyle + "'><div class='opt-prefix'><input type='" + inputType + "' disabled " + checkedAttr + "> " + displayLabel + ". </div><div class='opt-text'>" + q.options[key] + "</div></label>";
           });
 
           if (!isCorrect) {
@@ -740,7 +765,18 @@
             vId: currentVolunteer.volunteerId, subject: currentSubject, roundCount: roundCount, isRetryMode: isRetryMode, results: results
           });
 
-          let milestoneText = scoreData.totalScore >= 15000 ? "💎 鑽石級別 (15000分以上)" : (scoreData.totalScore >= 10500 ? "🥇 金牌級別 (10500~14999分)" : (scoreData.totalScore >= 6000 ? "🥈 銀牌級別 (6000~10499分)" : (scoreData.totalScore >= 1500 ? "🥉 銅牌級別 (1500~5999分)" : "⭐ 新星級別 (1499分以下)")));
+          // ⭐ 更新測驗結果的里程碑計算與級距
+          let milestoneIconStyle = "width: 100px; height: auto; vertical-align: middle; margin-right: 15px; filter: drop-shadow(6px 6px 5px rgba(0,0,0,0.3));"; 
+
+          let milestoneText = scoreData.totalScore >= 15001 
+            ? `<img src="https://drive.google.com/thumbnail?id=1T3KZ5YhBfdTgUxEAUvT9TXPvG6iZoEHl&sz=w300" style="${milestoneIconStyle}" alt="鑽石"> 鑽石級別 (15001分以上)`
+            : (scoreData.totalScore >= 10501 
+                ? `<img src="https://drive.google.com/thumbnail?id=1nbUIdxqEw1BDl4GmBGSA_iUo12p77CTR&sz=w300" style="${milestoneIconStyle}" alt="金牌"> 金牌級別 (10501~15000分)` 
+                : (scoreData.totalScore >= 7501 
+                    ? `<img src="https://drive.google.com/thumbnail?id=1B4WFnY7C5M5PDj1NBnTH7sS81j625p9H&sz=w300" style="${milestoneIconStyle}" alt="銀牌"> 銀牌級別 (7501~10500分)`
+                    : (scoreData.totalScore >= 4501 
+                        ? `<img src="https://drive.google.com/thumbnail?id=19XDvL8SIKN8zBnGIe-KIkxPgcN3ygK52&sz=w300" style="${milestoneIconStyle}" alt="銅牌"> 銅牌級別 (4501~7500分)` 
+                        : `<img src="https://drive.google.com/thumbnail?id=16llBhrcNy0VO0_0yvELk7StxXRTl7xts&sz=w300" style="${milestoneIconStyle}" alt="新星"> 新星級別 (4500分以下)`)));
           let scoreHtml = "<div class='score-board " + (currentSubject === '攝影' ? 'theme-photo' : '') + "'><h3>["+currentSubject+"] 第 " + roundCount + " 次 " + (isRetryMode ? "錯題重刷" : "測驗") + " 完成！</h3><p style='font-size: 32px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 15px 0;'>本次獲得分數：<span class='score-number' style='margin-left: 15px;'>" + scoreData.roundScore + " 分</span></p><hr style='border:0; border-top:2px dashed #f39c12; margin:25px 0;'><p style='font-size: 32px; font-weight: bold; display: flex; align-items: center; justify-content: center; margin: 15px 0;'>累積總分：<span class='score-number' style='margin-left: 15px;'> " + scoreData.totalScore + " 分</span></p><p style='font-size:32px; font-weight:bold; color:#8e44ad; margin-top:20px; line-height: 1.5;'>目前里程碑：<br>" + milestoneText + "</p><div style='background:#f4f6f9; padding:20px; border-radius:10px; margin-top:25px; text-align:left;'><p style='font-size:28px; color:#555; margin:10px 0;'>🏆 您的得分超越了 <b>" + scoreData.percentile + "%</b> 的測驗者</p><p style='font-size:28px; color:#555; margin:10px 0;'>🎯 目前前 5% 的測驗者平均得分為 <b>" + scoreData.top5Avg + " 分</b></p></div></div>";
           document.getElementById('result-container').innerHTML = html + scoreHtml;
           
