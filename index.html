@@ -912,16 +912,17 @@
 
             // === 1. 題目列 ===
             html += "<div class='pr-row'>";
-            html += "  <div class='pr-label'>題目 " + qNumber + "</div>";
+            html += "  <div class='pr-label'>題目</div>"; // 🌟 把左側的數字拿掉，純顯示「題目」
+            html += "  <div class='pr-content'>";
             
-            // 🌟 加上 display: flex 讓標籤與文字變成左右兩個區塊
-            html += "  <div class='pr-content' style='display: flex; align-items: flex-start;'>";
-            
-            // 🌟 左側區塊：放置題型標籤 (設定 flex-shrink: 0 防止標籤被壓縮)
-            html += "    <div style='flex-shrink: 0; margin-right: 15px;'><span class='q-type-badge " + badgeClass + "' style='font-size:24px; padding:6px 12px;'>" + formatStr + "</span></div>";
-            
-            // 🌟 右側區塊：放置題目文字 (設定 flex-grow: 1 讓文字填滿剩下的空間)
-            html += "    <div style='font-size:32px; font-weight:bold; color:#34495e; line-height:1.5; flex-grow: 1; word-break: break-word;'>" + q.text + "</div>";
+            // 🌟 直接套用與題庫一模一樣的 HTML 結構與 Class，讓數字回到右邊，確保 100% 原汁原味
+            html += "    <div class='q-header' style='margin-bottom: 0;'>";
+            html += "      <div class='q-number'>" + qNumber + ". </div>";
+            html += "      <div class='q-content'>";
+            html += "        <div class='q-badge-wrapper'><span class='q-type-badge " + badgeClass + "'>" + formatStr + "</span></div>";
+            html += "        <div class='q-title-text'>" + q.text + "</div>";
+            html += "      </div>";
+            html += "    </div>";
             
             html += "  </div>";
             html += "</div>";
