@@ -451,14 +451,12 @@
         return name;
       }
 
-      window.onload = function() {
+     window.onload = function() {
         // 🌟 如果是測試站，解鎖漢堡選單中的校稿功能
         if (isTestEnv) {
           document.getElementById('test-env-menu').style.display = 'flex';
         }
         
-        try {
-          // ... 其餘原本的程式碼保持不變 ...
         try {
           let savedUser = localStorage.getItem('volunteerData');
           if (savedUser) {
@@ -473,7 +471,6 @@
           document.getElementById('login-section').style.display = 'block';
         }
       };
-
       document.addEventListener('click', function(event) {
         var menu = document.getElementById('side-menu');
         var btn = document.querySelector('.menu-btn');
