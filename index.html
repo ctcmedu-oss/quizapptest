@@ -131,6 +131,19 @@
       .login-image-wrapper { width: 100%; text-align: center; margin-bottom: 20px; }
       .hero-image { width: 100%; height: auto; border-radius: 16px; object-fit: contain; display: block; margin: 0 auto; }
       .login-form-wrapper { padding: 20px 0 0 0; display: flex; flex-direction: column; justify-content: center; }
+		
+	  /* 🌟 校稿專用排版樣式 */
+      .pr-block { border: 2px solid #bdc3c7; margin-bottom: 40px; border-radius: 4px; background: white; display: flex; flex-direction: column; }
+      .pr-row { display: flex; border-bottom: 1px solid #ecf0f1; padding: 30px; }
+      .pr-row:last-child { border-bottom: none; }
+      .pr-label { width: 160px; flex-shrink: 0; font-size: 36px; font-weight: bold; color: #2c3e50; text-align: left; }
+      .pr-content { flex-grow: 1; }
+      
+      /* 校稿區手機版排版自動垂直堆疊 */
+      @media (max-width: 800px) {
+        .pr-row { flex-direction: column; padding: 20px; }
+        .pr-label { margin-bottom: 15px; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; width: 100%; }
+      }	
 
       /* 手機版排版調整（題目斷行對齊、返回按鈕不壓字） */
       @media (max-width: 800px) {
@@ -265,6 +278,10 @@
       <button class="menu-btn" onclick="toggleMenu()">☰</button>
       <div id="side-menu" class="side-menu">
         <a href="javascript:void(0);" onclick="showInquiry()">📊 積分查詢</a>
+        <div id="test-env-menu" style="display:none; flex-direction:column;">
+          <a href="javascript:void(0);" onclick="showProofread('文編')" style="color:#e67e22;">📝 文編校稿 (測試站)</a>
+          <a href="javascript:void(0);" onclick="showProofread('攝影')" style="color:#3498db;">📷 攝影校稿 (測試站)</a>
+        </div>
         <a href="javascript:void(0);" onclick="logout()" style="color:#e74c3c;">🚪 登出系統</a>
       </div>
       <h2 id="welcome-msg" style="margin-top: 50px;"></h2>
@@ -279,6 +296,14 @@
       </div>
       <div id="inquiry-content"></div>
     </div>
+	  
+	<div id="proofread-section" class="container" style="max-width: 1200px;">
+      <div class="sticky-header">
+        <h2 class="inquiry-title">試題校稿模式</h2>
+        <button class="back-btn-text" onclick="goHome()">返回</button>
+      </div>
+      <div id="proofread-container"></div>
+    </div>	  
 
     <div id="quiz-section" class="container">
       <div class="sticky-header">
@@ -427,6 +452,13 @@
       }
 
       window.onload = function() {
+        // 🌟 如果是測試站，解鎖漢堡選單中的校稿功能
+        if (isTestEnv) {
+          document.getElementById('test-env-menu').style.display = 'flex';
+        }
+        
+        try {
+          // ... 其餘原本的程式碼保持不變 ...
         try {
           let savedUser = localStorage.getItem('volunteerData');
           if (savedUser) {
@@ -833,6 +865,109 @@
       }
 
       function goHome() { window.scrollTo(0, 0); isRetryMode = false; wrongQuestionsQueue = []; document.getElementById('side-menu').style.display = 'none'; renderSelectSection(); }
+		  
+		async function showProofread(subject) {
+        window.scrollTo(0, 0);
+        document.getElementById('side-menu').style.display = 'none';
+        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+        document.getElementById('proofread-section').style.display = 'block';
+        document.getElementById('proofread-container').innerHTML = "<div class='loading-container'><div class='spinner'></div><div class='loading-text'>讀取 "+subject+" 校稿資料中...</div></div>";
+
+        try {
+          // 測試環境下，API 會自動回傳下一週(提早一週)的題目
+          const questions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject });
+
+          let html = "";
+          let today = new Date();
+          let dateStr = today.getFullYear() + "/" + String(today.getMonth()+1).padStart(2, '0') + "/" + String(today.getDate()).padStart(2, '0');
+
+          html += "<div style='margin-bottom: 30px;'>";
+          html += "<h2 style='text-align:center; font-size: 48px; margin-bottom: 20px; color: #2c3e50;'>" + subject + "檢定-測試週試題 <span style='font-size:32px; color:#555;'>( 校稿用 )</span></h2>";
+          html += "<div style='text-align:right; font-size: 28px; color: #2c3e50;'>列印日期：" + dateStr + "</div>";
+          html += "</div>";
+
+          if (!questions || questions.length === 0) {
+            html += "<p style='text-align:center; color:#e74c3c; font-weight:bold; font-size: 32px;'>目前沒有可校稿的題目釋出！</p>";
+            document.getElementById('proofread-container').innerHTML = html;
+            return;
+          }
+
+          questions.forEach((q, index) => {
+            let qNumber = index + 1;
+            let rawFormat = q.qFormat;
+            let formatStr = (rawFormat !== undefined && rawFormat !== null) ? String(rawFormat).trim() : '單選題';
+            let isMulti = formatStr.includes('多') || formatStr.includes('複');
+            let badgeClass = isMulti ? 'badge-multi' : (formatStr.includes('是非') ? 'badge-boolean' : 'badge-single');
+
+            // 取出資料庫中的正確答案陣列
+            let dbAnswerStr = String(q.answer).toUpperCase().replace(/[\s,、，]/g, '').split('');
+
+            html += "<div class='pr-block'>";
+
+            // === 1. 題目列 ===
+            html += "<div class='pr-row'>";
+            html += "  <div class='pr-label'>題目 " + qNumber + "</div>";
+            html += "  <div class='pr-content'><span class='q-type-badge " + badgeClass + "' style='font-size:24px; padding:6px 12px; margin-right:15px; vertical-align: middle;'>" + formatStr + "</span><span style='font-size:32px; font-weight:bold; color:#34495e; vertical-align: middle; line-height:1.5;'>" + q.text + "</span></div>";
+            html += "</div>";
+
+            // === 2. 答案列 ===
+            html += "<div class='pr-row'>";
+            html += "  <div class='pr-label'>答案</div>";
+            html += "  <div class='pr-content' style='display:flex; flex-direction:column; gap:8px;'>";
+
+            const displayLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+            let validKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.options && q.options[k] && String(q.options[k]).trim() !== "");
+
+            validKeys.forEach((key, idx) => {
+               let isCorrect = dbAnswerStr.includes(key);
+               let displayLabel = displayLetters[idx];
+               let inputType = isMulti ? 'checkbox' : 'radio';
+
+               // 依照是否為正確答案，套用圖片中的不同底色與字體顏色
+               let rowStyle = "display:flex; align-items:flex-start; padding: 15px 20px; border-radius: 12px; font-size: 32px; line-height: 1.5;";
+               if (isCorrect) {
+                   rowStyle += " background-color: #f4f6f9; color: #27ae60; font-weight:bold;";
+               } else {
+                   rowStyle += " color: #34495e;";
+               }
+
+               let checkedAttr = isCorrect ? "checked" : "";
+
+               html += "<label style='" + rowStyle + "'>";
+               html += "<input type='" + inputType + "' disabled " + checkedAttr + " style='width:32px; height:32px; margin: 6px 15px 0 0; flex-shrink:0;'>";
+               html += "<span style='margin-right: 12px; flex-shrink:0;'>" + displayLabel + ". </span>";
+               html += "<span style='word-break: break-word;'>" + q.options[key] + "</span>";
+               html += "</label>";
+            });
+
+            html += "  </div>";
+            html += "</div>";
+
+            // === 3. 解析列 ===
+            let expText = String(q.explanation || "").trim();
+            html += "<div class='pr-row' style='border-bottom:none;'>";
+            html += "  <div class='pr-label'>解析</div>";
+            html += "  <div class='pr-content'>";
+            if (expText !== "" && expText !== "undefined" && expText !== "null") {
+               html += "<details class='explanation-details' open style='margin-top:0; border: 1px solid #e6ebf0; border-left: 8px solid #f39c12; pointer-events: none;'>";
+               html += "<summary class='explanation-summary' style='color:#d35400;'>💡 點此查看重點解析</summary>";
+               html += "<div class='explanation-content' style='color:#7f8c8d; font-weight:normal;'>" + expText + "</div>";
+               html += "</details>";
+            } else {
+               html += "<div style='color:#bdc3c7; font-size:28px; padding: 15px 0;'>無提供解析</div>";
+            }
+            html += "  </div>";
+            html += "</div>";
+
+            html += "</div>"; // end pr-block
+          });
+
+          document.getElementById('proofread-container').innerHTML = html;
+
+        } catch (error) {
+          document.getElementById('proofread-container').innerHTML = "<p style='text-align:center; color:#e74c3c; line-height:1.5; font-size: 32px;'>" + error.message + "</p>";
+        }
+      }	  
     </script>
   </body>
 </html>
