@@ -961,24 +961,25 @@
             html += "</div>";
 
             // === 3. 解析列 ===
-            let expText = String(q.explanation || "").trim();
-            html += "<div class='pr-row' style='border-bottom:none;'>";
-            html += "  <div class='pr-label'>解析</div>";
-            html += "  <div class='pr-content'>";
-            if (expText !== "" && expText !== "undefined" && expText !== "null") {
-               // 🌟 加入科目的主題判斷
-               let themeClass = subject === '攝影' ? 'theme-photo' : '';
-               
-               // 🌟 移除了寫死的橘色 border 與 color，改吃 CSS class 設定
-               html += "<details class='explanation-details " + themeClass + "' open style='margin-top:0; pointer-events: none;'>";
-               html += "<summary class='explanation-summary'>💡 點此查看重點解析</summary>";
-               html += "<div class='explanation-content' style='color:#7f8c8d; font-weight:normal;'>" + expText + "</div>";
-               html += "</details>";
-            } else {
-               html += "<div style='color:#bdc3c7; font-size:28px; padding: 15px 0;'>無提供解析</div>";
-            }
-            html += "  </div>";
-            html += "</div>";
+            let expText = String(q.explanation || "").trim();
+            html += "<div class='pr-row' style='border-bottom:none;'>";
+            html += "  <div class='pr-label'>解析</div>";
+            html += "  <div class='pr-content'>";
+            if (expText !== "" && expText !== "undefined" && expText !== "null") {
+               let themeClass = subject === '攝影' ? 'theme-photo' : '';
+               
+               html += "<details class='explanation-details " + themeClass + "' open style='margin-top:0; pointer-events: none;'>";
+               html += "<summary class='explanation-summary'>💡 點此查看重點解析</summary>";
+               
+               // 🌟 這裡把原本寫死的 style 拿掉，讓他完全吃 CSS 裡 .explanation-content 的顏色設定！
+               html += "<div class='explanation-content'>" + expText + "</div>";
+               
+               html += "</details>";
+            } else {
+               html += "<div style='color:#bdc3c7; font-size:28px; padding: 15px 0;'>無提供解析</div>";
+            }
+            html += "  </div>";
+            html += "</div>";
 
             html += "</div>"; // end pr-block
           });
