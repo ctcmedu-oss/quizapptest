@@ -299,6 +299,10 @@
 
     <script>
       const API_URL = "https://script.google.com/macros/s/AKfycbzR0nxw4mkxT1JkA4w2nQBsRJ0qIVISkz_pu7_hws0ULiksWvyiB_ivIls2dIRQmQm5/exec"; 
+		
+		// 🌟 自動判斷環境：如果當前網址包含 "test"，就自動切換為測試環境
+		const isTestEnv = window.location.href.includes("test"); 
+		const ENV_PARAM = isTestEnv ? "test" : "prod";
 
       const SCORING_RULES_HTML = `
       <div style="background-color: #f8f9fa; border-left: 8px solid #3498db; padding: 25px 30px; margin: 0 0 35px 0; border-radius: 8px; text-align: left; font-size: 28px; line-height: 1.6; color: #2c3e50; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
@@ -399,7 +403,8 @@
           const response = await fetch(API_URL, {
             method: 'POST', redirect: 'follow',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: action, ...data })
+            // 🌟 將 env 參數一併傳遞給後端
+            body: JSON.stringify({ action: action, env: ENV_PARAM, ...data }) 
           });
           const text = await response.text();
           let result = JSON.parse(text);
