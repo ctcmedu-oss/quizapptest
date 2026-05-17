@@ -873,107 +873,111 @@
       function goHome() { window.scrollTo(0, 0); isRetryMode = false; wrongQuestionsQueue = []; document.getElementById('side-menu').style.display = 'none'; renderSelectSection(); }
 		  
 		async function showProofread(subject) {
-        window.scrollTo(0, 0);
-        document.getElementById('side-menu').style.display = 'none';
-        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
-        document.getElementById('proofread-section').style.display = 'block';
-        document.getElementById('proofread-container').innerHTML = "<div class='loading-container'><div class='spinner'></div><div class='loading-text'>讀取 "+subject+" 校稿資料中...</div></div>";
+        window.scrollTo(0, 0);
+        document.getElementById('side-menu').style.display = 'none';
+        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+        document.getElementById('proofread-section').style.display = 'block';
+        document.getElementById('proofread-container').innerHTML = "<div class='loading-container'><div class='spinner'></div><div class='loading-text'>讀取 "+subject+" 校稿資料中...</div></div>";
 
-        try {
-          // 測試環境下，API 會自動回傳下一週(提早一週)的題目
-          const questions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject });
+        try {
+          // 測試環境下，API 會自動回傳下一週(提早一週)的題目
+          const questions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject });
 
-          let html = "";
-          let today = new Date();
-          let dateStr = today.getFullYear() + "/" + String(today.getMonth()+1).padStart(2, '0') + "/" + String(today.getDate()).padStart(2, '0');
+          let html = "";
+          let today = new Date();
+          let dateStr = today.getFullYear() + "/" + String(today.getMonth()+1).padStart(2, '0') + "/" + String(today.getDate()).padStart(2, '0');
 
-          html += "<div style='margin-bottom: 30px;'>";
-          html += "<h2 style='text-align:center; font-size: 48px; margin-bottom: 20px; color: #2c3e50;'>" + subject + "檢定-測試週試題 <span style='font-size:32px; color:#555;'>( 校稿用 )</span></h2>";
-          html += "<div style='text-align:right; font-size: 28px; color: #2c3e50;'>列印日期：" + dateStr + "</div>";
-          html += "</div>";
+          html += "<div style='margin-bottom: 30px;'>";
+          html += "<h2 style='text-align:center; font-size: 48px; margin-bottom: 20px; color: #2c3e50;'>" + subject + "檢定-測試週試題 <span style='font-size:32px; color:#555;'>( 校稿用 )</span></h2>";
+          html += "<div style='text-align:right; font-size: 28px; color: #2c3e50;'>列印日期：" + dateStr + "</div>";
+          html += "</div>";
 
-          if (!questions || questions.length === 0) {
-            html += "<p style='text-align:center; color:#e74c3c; font-weight:bold; font-size: 32px;'>目前沒有可校稿的題目釋出！</p>";
-            document.getElementById('proofread-container').innerHTML = html;
-            return;
-          }
+          if (!questions || questions.length === 0) {
+            html += "<p style='text-align:center; color:#e74c3c; font-weight:bold; font-size: 32px;'>目前沒有可校稿的題目釋出！</p>";
+            document.getElementById('proofread-container').innerHTML = html;
+            return;
+          }
 
-          questions.forEach((q, index) => {
-            let qNumber = index + 1;
-            let rawFormat = q.qFormat;
-            let formatStr = (rawFormat !== undefined && rawFormat !== null) ? String(rawFormat).trim() : '單選題';
-            let isMulti = formatStr.includes('多') || formatStr.includes('複');
-            let badgeClass = isMulti ? 'badge-multi' : (formatStr.includes('是非') ? 'badge-boolean' : 'badge-single');
+          questions.forEach((q, index) => {
+            let qNumber = index + 1;
+            let rawFormat = q.qFormat;
+            let formatStr = (rawFormat !== undefined && rawFormat !== null) ? String(rawFormat).trim() : '單選題';
+            let isMulti = formatStr.includes('多') || formatStr.includes('複');
+            let badgeClass = isMulti ? 'badge-multi' : (formatStr.includes('是非') ? 'badge-boolean' : 'badge-single');
 
-            // 取出資料庫中的正確答案陣列
-            let dbAnswerStr = String(q.answer).toUpperCase().replace(/[\s,、，]/g, '').split('');
+            // 取出資料庫中的正確答案陣列
+            let dbAnswerStr = String(q.answer).toUpperCase().replace(/[\s,、，]/g, '').split('');
 
-            html += "<div class='pr-block'>";
+            html += "<div class='pr-block'>";
 
-            // === 1. 題目列 ===
-            html += "<div class='pr-row'>";
-            html += "  <div class='pr-label'>題目 " + qNumber + "</div>";
-            html += "  <div class='pr-content'><span class='q-type-badge " + badgeClass + "' style='font-size:24px; padding:6px 12px; margin-right:15px; vertical-align: middle;'>" + formatStr + "</span><span style='font-size:32px; font-weight:bold; color:#34495e; vertical-align: middle; line-height:1.5;'>" + q.text + "</span></div>";
-            html += "</div>";
+            // === 1. 題目列 ===
+            html += "<div class='pr-row'>";
+            html += "  <div class='pr-label'>題目 " + qNumber + "</div>";
+            html += "  <div class='pr-content'><span class='q-type-badge " + badgeClass + "' style='font-size:24px; padding:6px 12px; margin-right:15px; vertical-align: middle;'>" + formatStr + "</span><span style='font-size:32px; font-weight:bold; color:#34495e; vertical-align: middle; line-height:1.5;'>" + q.text + "</span></div>";
+            html += "</div>";
 
-            // === 2. 答案列 ===
-            html += "<div class='pr-row'>";
-            html += "  <div class='pr-label'>答案</div>";
-            html += "  <div class='pr-content' style='display:flex; flex-direction:column; gap:8px;'>";
+            // === 2. 答案列 ===
+            html += "<div class='pr-row'>";
+            html += "  <div class='pr-label'>答案</div>";
+            html += "  <div class='pr-content' style='display:flex; flex-direction:column; gap:8px;'>";
 
-            const displayLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
-            let validKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.options && q.options[k] && String(q.options[k]).trim() !== "");
+            const displayLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+            let validKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.options && q.options[k] && String(q.options[k]).trim() !== "");
 
-            validKeys.forEach((key, idx) => {
-               let isCorrect = dbAnswerStr.includes(key);
-               let displayLabel = displayLetters[idx];
-               let inputType = isMulti ? 'checkbox' : 'radio';
+            validKeys.forEach((key, idx) => {
+               let isCorrect = dbAnswerStr.includes(key);
+               let displayLabel = displayLetters[idx];
+               let inputType = isMulti ? 'checkbox' : 'radio';
 
-               // 依照是否為正確答案，套用圖片中的不同底色與字體顏色
-               let rowStyle = "display:flex; align-items:flex-start; padding: 15px 20px; border-radius: 12px; font-size: 32px; line-height: 1.5;";
-               if (isCorrect) {
-                   rowStyle += " background-color: #f4f6f9; color: #27ae60; font-weight:bold;";
-               } else {
-                   rowStyle += " color: #34495e;";
-               }
+               // 依照是否為正確答案，套用圖片中的不同底色與字體顏色
+               let rowStyle = "display:flex; align-items:flex-start; padding: 15px 20px; border-radius: 12px; font-size: 32px; line-height: 1.5;";
+               if (isCorrect) {
+                   rowStyle += " background-color: #f4f6f9; color: #27ae60; font-weight:bold;";
+               } else {
+                   rowStyle += " color: #34495e;";
+               }
 
-               let checkedAttr = isCorrect ? "checked" : "";
+               let checkedAttr = isCorrect ? "checked" : "";
 
-               html += "<label style='" + rowStyle + "'>";
-               html += "<input type='" + inputType + "' disabled " + checkedAttr + " style='width:32px; height:32px; margin: 6px 15px 0 0; flex-shrink:0;'>";
-               html += "<span style='margin-right: 12px; flex-shrink:0;'>" + displayLabel + ". </span>";
-               html += "<span style='word-break: break-word;'>" + q.options[key] + "</span>";
-               html += "</label>";
-            });
+               html += "<label style='" + rowStyle + "'>";
+               html += "<input type='" + inputType + "' disabled " + checkedAttr + " style='width:32px; height:32px; margin: 6px 15px 0 0; flex-shrink:0;'>";
+               html += "<span style='margin-right: 12px; flex-shrink:0;'>" + displayLabel + ". </span>";
+               html += "<span style='word-break: break-word;'>" + q.options[key] + "</span>";
+               html += "</label>";
+            });
 
-            html += "  </div>";
-            html += "</div>";
+            html += "  </div>";
+            html += "</div>";
 
-            // === 3. 解析列 ===
-            let expText = String(q.explanation || "").trim();
-            html += "<div class='pr-row' style='border-bottom:none;'>";
-            html += "  <div class='pr-label'>解析</div>";
-            html += "  <div class='pr-content'>";
-            if (expText !== "" && expText !== "undefined" && expText !== "null") {
-               html += "<details class='explanation-details' open style='margin-top:0; border: 1px solid #e6ebf0; border-left: 8px solid #f39c12; pointer-events: none;'>";
-               html += "<summary class='explanation-summary' style='color:#d35400;'>💡 點此查看重點解析</summary>";
-               html += "<div class='explanation-content' style='color:#7f8c8d; font-weight:normal;'>" + expText + "</div>";
-               html += "</details>";
-            } else {
-               html += "<div style='color:#bdc3c7; font-size:28px; padding: 15px 0;'>無提供解析</div>";
-            }
-            html += "  </div>";
-            html += "</div>";
+            // === 3. 解析列 ===
+            let expText = String(q.explanation || "").trim();
+            html += "<div class='pr-row' style='border-bottom:none;'>";
+            html += "  <div class='pr-label'>解析</div>";
+            html += "  <div class='pr-content'>";
+            if (expText !== "" && expText !== "undefined" && expText !== "null") {
+               // 🌟 加入科目的主題判斷
+               let themeClass = subject === '攝影' ? 'theme-photo' : '';
+               
+               // 🌟 移除了寫死的橘色 border 與 color，改吃 CSS class 設定
+               html += "<details class='explanation-details " + themeClass + "' open style='margin-top:0; pointer-events: none;'>";
+               html += "<summary class='explanation-summary'>💡 點此查看重點解析</summary>";
+               html += "<div class='explanation-content' style='color:#7f8c8d; font-weight:normal;'>" + expText + "</div>";
+               html += "</details>";
+            } else {
+               html += "<div style='color:#bdc3c7; font-size:28px; padding: 15px 0;'>無提供解析</div>";
+            }
+            html += "  </div>";
+            html += "</div>";
 
-            html += "</div>"; // end pr-block
-          });
+            html += "</div>"; // end pr-block
+          });
 
-          document.getElementById('proofread-container').innerHTML = html;
+          document.getElementById('proofread-container').innerHTML = html;
 
-        } catch (error) {
-          document.getElementById('proofread-container').innerHTML = "<p style='text-align:center; color:#e74c3c; line-height:1.5; font-size: 32px;'>" + error.message + "</p>";
-        }
-      }	  
+        } catch (error) {
+          document.getElementById('proofread-container').innerHTML = "<p style='text-align:center; color:#e74c3c; line-height:1.5; font-size: 32px;'>" + error.message + "</p>";
+        }
+      }
     </script>
   </body>
 </html>
