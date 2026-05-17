@@ -881,17 +881,27 @@
         document.getElementById('proofread-container').innerHTML = "<div class='loading-container'><div class='spinner'></div><div class='loading-text'>讀取 "+subject+" 校稿資料中...</div></div>";
 
         try {
-          // 測試環境下，API 會自動回傳下一週(提早一週)的題目
-          const questions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject });
+          // 🌟 1. 呼叫 API 取得該科目目前的最新週次
+          const dbRound = await callApi('getUserCurrentRound', { vId: currentVolunteer.volunteerId, subject: subject });
+          
+          // 🌟 2. 設定校稿週數：因為你的註解寫「會回傳下一週(提早一週)的題目」，所以我先幫你設定為 dbRound + 1
+          // (備註：如果你的後端 API 在測試環境已經會自動加 1，這裡就直接寫 let proofreadWeek = dbRound; 即可)
+          let proofreadWeek = dbRound + 1;
 
-          let html = "";
-          let today = new Date();
-          let dateStr = today.getFullYear() + "/" + String(today.getMonth()+1).padStart(2, '0') + "/" + String(today.getDate()).padStart(2, '0');
+          // 測試環境下，API 會自動回傳下一週(提早一週)的題目
+          const questions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject });
 
-          html += "<div style='margin-bottom: 30px;'>";
-          html += "<h2 style='text-align:center; font-size: 48px; margin-bottom: 20px; color: #2c3e50;'>" + subject + "檢定-測試週試題 <span style='font-size:32px; color:#555;'>( 校稿用 )</span></h2>";
-          html += "<div style='text-align:right; font-size: 28px; color: #2c3e50;'>列印日期：" + dateStr + "</div>";
-          html += "</div>";
+          let html = "";
+          let today = new Date();
+          let dateStr = today.getFullYear() + "/" + String(today.getMonth()+1).padStart(2, '0') + "/" + String(today.getDate()).padStart(2, '0');
+
+          html += "<div style='margin-bottom: 30px;'>";
+          // 🌟 3. 將原本寫死的「測試週」替換成動態變數 proofreadWeek
+          html += "<h2 style='text-align:center; font-size: 48px; margin-bottom: 20px; color: #2c3e50;'>" + subject + "檢定-第 " + proofreadWeek + " 週試題 <span style='font-size:32px; color:#555;'>( 校稿用 )</span></h2>";
+          html += "<div style='text-align:right; font-size: 28px; color: #2c3e50;'>列印日期：" + dateStr + "</div>";
+          html += "</div>";
+
+          if (!questions || questions.length === 0) {
 
           if (!questions || questions.length === 0) {
             html += "<p style='text-align:center; color:#e74c3c; font-weight:bold; font-size: 32px;'>目前沒有可校稿的題目釋出！</p>";
