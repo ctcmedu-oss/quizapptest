@@ -917,37 +917,37 @@
             html += "</div>";
 
             // === 2. 答案列 ===
-            html += "<div class='pr-row'>";
-            html += "  <div class='pr-label'>答案</div>";
-            html += "  <div class='pr-content' style='display:flex; flex-direction:column; gap:8px;'>";
+            html += "<div class='pr-row'>";
+            html += "  <div class='pr-label'>答案</div>";
+            html += "  <div class='pr-content' style='display:flex; flex-direction:column; gap:8px;'>";
 
-            const displayLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
-            let validKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.options && q.options[k] && String(q.options[k]).trim() !== "");
+            const displayLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+            let validKeys = ['A', 'B', 'C', 'D', 'E'].filter(k => q.options && q.options[k] && String(q.options[k]).trim() !== "");
 
-            validKeys.forEach((key, idx) => {
-               let isCorrect = dbAnswerStr.includes(key);
-               let displayLabel = displayLetters[idx];
-               let inputType = isMulti ? 'checkbox' : 'radio';
+            validKeys.forEach((key, idx) => {
+               let isCorrect = dbAnswerStr.includes(key);
+               let displayLabel = displayLetters[idx];
+               let inputType = isMulti ? 'checkbox' : 'radio';
 
-               // 依照是否為正確答案，套用圖片中的不同底色與字體顏色
-               let rowStyle = "display:flex; align-items:flex-start; padding: 15px 20px; border-radius: 12px; font-size: 32px; line-height: 1.5;";
-               if (isCorrect) {
-                   rowStyle += " background-color: #f4f6f9; color: #27ae60; font-weight:bold;";
-               } else {
-                   rowStyle += " color: #34495e;";
-               }
+               // 依照是否為正確答案，套用不同的底色與字體顏色
+               let rowStyle = "display:flex; align-items:flex-start; padding: 15px 20px; border-radius: 12px; font-size: 32px; line-height: 1.5;";
+               if (isCorrect) {
+                   rowStyle += " background-color: #f4f6f9; color: #27ae60; font-weight:bold;";
+               } else {
+                   rowStyle += " color: #34495e;";
+               }
 
-               let checkedAttr = isCorrect ? "checked" : "";
+               let checkedAttr = isCorrect ? "checked" : "";
 
-               html += "<label style='" + rowStyle + "'>";
-               html += "<input type='" + inputType + "' disabled " + checkedAttr + " style='width:32px; height:32px; margin: 6px 15px 0 0; flex-shrink:0;'>";
-               html += "<span style='margin-right: 12px; flex-shrink:0;'>" + displayLabel + ". </span>";
-               html += "<span style='word-break: break-word;'>" + q.options[key] + "</span>";
-               html += "</label>";
-            });
+               // 🌟 這裡套用與題庫相同的 opt-prefix 與 opt-text 結構，讓 CSS 圓圈樣式能正確運作
+               html += "<label style='" + rowStyle + "'>";
+               html += "<div class='opt-prefix'><input type='" + inputType + "' disabled " + checkedAttr + "> " + displayLabel + ". </div>";
+               html += "<div class='opt-text'>" + q.options[key] + "</div>";
+               html += "</label>";
+            });
 
-            html += "  </div>";
-            html += "</div>";
+            html += "  </div>";
+            html += "</div>";
 
             // === 3. 解析列 ===
             let expText = String(q.explanation || "").trim();
