@@ -43,7 +43,8 @@
       .badge-boolean { background-color: #27ae60; } 
       .badge-multi { background-color: #e67e22; }  
       
-      .q-block label { display: flex; align-items: flex-start; padding: 15px 0; cursor: pointer; line-height: 1.5; font-size: 32px; }
+      .q-block label { display: flex; align-items: flex-start; padding: 15px 20px; border-radius: 12px; cursor: pointer; line-height: 1.5; font-size: 32px; margin-bottom: 8px; transition: background 0.2s;}
+      .q-block label:hover { background-color: #f8f9fa; }
       .opt-prefix { flex-shrink: 0; white-space: nowrap; margin-right: 12px; display: flex; align-items: flex-start; }
       
       /* 單選/多選框縮小，配合 32px 的選項文字 */
@@ -782,8 +783,8 @@
                   let isSelected = userSelectedArr.includes(key);
                   let checkedAttr = isSelected ? "checked" : "";
                   let isOptionCorrect = dbAnswerStr.split(',').includes(key);
-                  let labelStyle = "display: flex; align-items: flex-start; padding: 12px 0; cursor: default;" + (isOptionCorrect ? " color: #27ae60; font-weight: bold;" : (isSelected ? " color: #e74c3c; font-weight: bold;" : ""));
-                  if (isSelected) labelStyle += " background-color: #f1f2f6; padding: 12px 18px; margin: 4px -18px; border-radius: 10px;";
+                  let labelStyle = "display: flex; align-items: flex-start; padding: 15px 20px; border-radius: 12px; cursor: default;" + (isOptionCorrect ? " color: #27ae60; font-weight: bold;" : (isSelected ? " color: #e74c3c; font-weight: bold;" : ""));
+			  	  if (isSelected) labelStyle += " background-color: #f1f2f6;";
                   html += "<label style='" + labelStyle + "'><div class='opt-prefix'><input type='" + inputType + "' disabled " + checkedAttr + "> " + displayLabel + ". </div><div class='opt-text'>" + q.options[key] + "</div></label>";
           });
 
@@ -940,8 +941,8 @@
                let displayLabel = displayLetters[idx];
                let inputType = isMulti ? 'checkbox' : 'radio';
 
-               // 依照是否為正確答案，套用不同的底色與字體顏色
-               let rowStyle = "display:flex; align-items:flex-start; padding: 15px 20px; border-radius: 12px; font-size: 32px; line-height: 1.5;";
+               // 🌟 統一使用寬鬆的內邊距與圓角，創造縮排的視覺層級
+               let rowStyle = "display:flex; align-items:flex-start; padding: 15px 20px; border-radius: 12px; font-size: 32px; line-height: 1.5; cursor: default;";
                if (isCorrect) {
                    rowStyle += " background-color: #f4f6f9; color: #27ae60; font-weight:bold;";
                } else {
