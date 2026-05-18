@@ -881,12 +881,12 @@
         document.getElementById('proofread-container').innerHTML = "<div class='loading-container'><div class='spinner'></div><div class='loading-text'>讀取 "+subject+" 校稿資料中...</div></div>";
 
         try {
-          // 🌟 1. 呼叫 API 取得該科目目前的最新週次
-          const dbRound = await callApi('getUserCurrentRound', { vId: currentVolunteer.volunteerId, subject: subject });
-          
-          // 🌟 2. 設定校稿週數：因為你的註解寫「會回傳下一週(提早一週)的題目」，所以我先幫你設定為 dbRound + 1
-          // (備註：如果你的後端 API 在測試環境已經會自動加 1，這裡就直接寫 let proofreadWeek = dbRound; 即可)
-          let proofreadWeek = dbRound + 1;
+          //  新版前端寫法：直接跟後端索取由 5/18 算起、不認帳號的絕對時間週數
+			const weekData = await callApi('getCurrentWeek', {});
+			let currentAbsoluteWeek = weekData.currentWeek;
+
+			// 測試環境自動看下一週的題目 (提早一週)
+			let proofreadWeek = (isTestEnv) ? currentAbsoluteWeek + 1 : currentAbsoluteWeek;
 
           // 測試環境下，API 會自動回傳下一週(提早一週)的題目
           const questions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject });
