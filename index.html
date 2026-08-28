@@ -101,30 +101,30 @@
     </div>
 
     <!-- 功能首頁 (4 個主按鈕) -->
-    <div id="select-section" class="container" style="display:none;">
-      <h2 id="welcome-msg"></h2>
-      <p style="text-align:center; font-size: 32px; color: #555;">請選擇測驗模式或查看題庫：</p>
-      
-      <div class="menu-grid">
-        <button class="btn-portal btn-edit-mock" onclick="startMockExam('文編')">
-          <span>📝 初階文編</span>
-          <span style="font-size:24px; opacity:0.9;">【模擬考 (45題)】</span>
-        </button>
-        <button class="btn-portal btn-edit-all" onclick="showAllQuestions('文編')">
-          <span>📖 初階文編</span>
-          <span style="font-size:24px; opacity:0.9;">【完整題庫與解析】</span>
-        </button>
-        <button class="btn-portal btn-photo-mock" onclick="startMockExam('攝影')">
-          <span>📷 初階攝影</span>
-          <span style="font-size:24px; opacity:0.9;">【模擬考 (45題)】</span>
-        </button>
-        <button class="btn-portal btn-photo-all" onclick="showAllQuestions('攝影')">
-          <span>📚 初階攝影</span>
-          <span style="font-size:24px; opacity:0.9;">【完整題庫與解析】</span>
-        </button>
-      </div>
-      <button onclick="logout()" style="background-color: #95a5a6; color: #ffffff; font-size: 24px; padding: 15px; margin-top: 35px; border-radius: 10px; width: 100%;">🚪 登出系統</button>
-    </div>
+<div id="select-section" class="container" style="display:none;">
+  <h2 id="welcome-msg"></h2>
+  <p style="text-align:center; font-size: 32px; color: #555;">請選擇測驗模式或查看題庫：</p>
+  
+  <div class="menu-grid">
+    <button class="btn-portal btn-edit-mock" onclick="startMockExam('文編')">
+      <span style="font-size: 26px; opacity: 0.95;">📝 初階文編</span>
+      <span style="font-size: 36px; font-weight: bold;">模擬考 (45題)</span>
+    </button>
+    <button class="btn-portal btn-edit-all" onclick="showAllQuestions('文編')">
+      <span style="font-size: 26px; opacity: 0.95;">📖 初階文編</span>
+      <span style="font-size: 36px; font-weight: bold;">完整題庫與解析</span>
+    </button>
+    <button class="btn-portal btn-photo-mock" onclick="startMockExam('攝影')">
+      <span style="font-size: 26px; opacity: 0.95;">📷 初階攝影</span>
+      <span style="font-size: 36px; font-weight: bold;">模擬考 (45題)</span>
+    </button>
+    <button class="btn-portal btn-photo-all" onclick="showAllQuestions('攝影')">
+      <span style="font-size: 26px; opacity: 0.95;">📚 初階攝影</span>
+      <span style="font-size: 36px; font-weight: bold;">完整題庫與解析</span>
+    </button>
+  </div>
+  <button onclick="logout()" style="background-color: #95a5a6; color: #ffffff; font-size: 24px; padding: 15px; margin-top: 35px; border-radius: 10px; width: 100%;">🚪 登出系統</button>
+</div>
 
     <!-- 測驗進行區塊 -->
     <div id="quiz-section" class="container" style="display:none;">
@@ -155,7 +155,7 @@
     </div>
 
     <script>
-      const API_URL = "https://script.google.com/macros/s/AKfycbxJQVOENm7U8KXgC3I53Ty3K0GodcCzlNCKBZx8bPIfTeZwPnx8NMKyI6JPgh2-wQUxnQ/exec";
+      const API_URL = "https://script.google.com/macros/s/AKfycbwkjeSSWMfYQl-4rq0rjZmuetkH6wLWYglmauySV3N2VQyfIZsbVhT5if1fLZbZm17Ftw/exec";
 
       let currentVolunteer = {};
       let currentQuestions = [];
