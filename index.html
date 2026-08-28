@@ -95,7 +95,7 @@
           <span style="font-size:24px; opacity:0.9;">【完整題庫與解析】</span>
         </button>
       </div>
-      <button onclick="logout()" style="background-color:#e74c3c; margin-top:35px;">🚪 登出系統</button>
+      <button onclick="logout()" style="background-color: #95a5a6; color: #ffffff; font-size: 24px; padding: 15px; margin-top: 35px; border-radius: 10px; width: 100%;">🚪 登出系統</button>
     </div>
 
     <!-- 測驗進行區塊 -->
@@ -178,23 +178,56 @@
         document.getElementById('login-section').style.display = 'block';
       }
 
-      // 進入模擬考模式 (45題)
-      async function startMockExam(subject) {
-        currentSubject = subject;
-        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
-        document.getElementById('quiz-section').style.display = 'block';
-        document.getElementById('quiz-title').innerText = subject + "｜模擬測驗 (45題)";
-        document.getElementById('question-container').innerHTML = "<div class='loading-container'><div class='spinner'></div>載入題庫中...</div>";
-        document.getElementById('submit-btn').style.display = 'none';
+      // 洗牌輔助函式
+function shuffleArray(array) {
+  let arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
 
-        try {
-          currentQuestions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject, mode: 'quiz' });
-          renderQuizQuestions();
-        } catch (e) {
-          document.getElementById('question-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
-        }
+// 進入模擬考模式 (45題)
+async function startMockExam(subject) {
+  currentSubject = subject;
+  document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+  document.getElementById('quiz-section').style.display = 'block';
+  document.getElementById('quiz-title').innerText = subject + "｜模擬測驗 (45題)";
+  document.getElementById('question-container').innerHTML = "<div class='loading-container'><div class='spinner'></div>載入題庫中...</div>";
+  document.getElementById('submit-btn').style.display = 'none';
+
+  try {
+    const rawQuestions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject, mode: 'quiz' });
+    
+    // 🌟 前端嚴格依題型分類
+    let boolList = [];
+    let singleList = [];
+    let multiList = [];
+
+    rawQuestions.forEach(q => {
+      let fmt = String(q.qFormat || '').trim();
+      if (fmt.includes('是非')) {
+        boolList.push(q);
+      } else if (fmt.includes('多') || fmt.includes('複')) {
+        multiList.push(q);
+      } else {
+        singleList.push(q);
       }
+    });
 
+    // 🌟 同題型內部隨機打散，並嚴格依序串接：是非 -> 單選 -> 多選
+    currentQuestions = [
+      ...shuffleArray(boolList),
+      ...shuffleArray(singleList),
+      ...shuffleArray(multiList)
+    ];
+
+    renderQuizQuestions();
+  } catch (e) {
+    document.getElementById('question-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
+  }
+}
       function renderQuizQuestions() {
         let html = "";
         currentQuestions.forEach((q, idx) => {
