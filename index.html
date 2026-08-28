@@ -344,11 +344,10 @@ html += "<div class='q-title-text'>" + q.text + "</div></div></div>";
 
             html += "<div class='pr-block'>";
             // 題目列
-            html += "<div class='pr-row'><div class='pr-label'>第 " + (idx + 1) + " 題</div><div class='pr-content'>";
-            html += "<span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span>";
-            if (q.weeks) html += " <span class='q-type-badge badge-week'>釋出週次：第 " + q.weeks + " 週</span>";
-            html += "<div style='font-weight:bold; font-size:32px; margin-top:10px;'>" + q.text + "</div>";
-            html += "</div></div>";
+			 html += "<div class='pr-row'><div class='pr-label'>第 " + (idx + 1) + " 題</div><div class='pr-content'>";
+			  html += "<span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span>";
+			  html += "<div style='font-weight:bold; font-size:32px; margin-top:10px;'>" + q.text + "</div>";
+			  html += "</div></div>";	
 
             // 選項列
             html += "<div class='pr-row'><div class='pr-label'>答案</div><div class='pr-content'>";
