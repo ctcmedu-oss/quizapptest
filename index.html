@@ -265,9 +265,8 @@ async function startMockExam(subject) {
 
           html += "<div class='q-block' id='q-wrap-" + q.id + "'>";
           html += "<div class='q-header'><div class='q-number'>" + (idx + 1) + ".</div>";
-          html += "<div class='q-content'><div class='q-badge-wrapper'><span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span>";
-          if (q.weeks) html += "<span class='q-type-badge badge-week'>第" + q.weeks + "週</span>";
-          html += "</div><div class='q-title-text'>" + q.text + "</div></div></div>";
+html += "<div class='q-content'><div class='q-badge-wrapper'><span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span></div>";
+html += "<div class='q-title-text'>" + q.text + "</div></div></div>";
 
           ['A', 'B', 'C', 'D', 'E'].forEach(k => {
             if (q.options && q.options[k]) {
