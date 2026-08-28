@@ -147,24 +147,27 @@
       }
 
       async function login() {
-        var name = document.getElementById('vName').value.trim();
-        var id = document.getElementById('vId').value.trim();
-        if (!name || !id) { alert("請輸入姓名與義工編號"); return; }
-        document.getElementById('login-msg').innerText = "驗證登入中...";
-        try {
-          const user = await callApi('verifyLogin', { name: name, id: id });
-          if (user.success) {
-            currentVolunteer = user;
-            document.getElementById('login-section').style.display = 'none';
-            document.getElementById('select-section').style.display = 'block';
-            document.getElementById('welcome-msg').innerText = user.volunteerName + " 您好！";
-          } else {
-            document.getElementById('login-msg').innerText = user.message;
-          }
-        } catch (e) {
-          document.getElementById('login-msg').innerText = e.message;
-        }
-      }
+  var name = document.getElementById('vName').value.trim();
+  var id = document.getElementById('vId').value.trim();
+  if (!name || !id) { alert("請輸入姓名與義工編號"); return; }
+  document.getElementById('login-msg').innerText = "驗證登入中...";
+  try {
+    const user = await callApi('verifyLogin', { name: name, id: id });
+    if (user.success) {
+      currentVolunteer = user;
+      // 🌟 關鍵：將使用者資料永久儲存在瀏覽器中
+      localStorage.setItem('volunteerData', JSON.stringify(user));
+      
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('select-section').style.display = 'block';
+      document.getElementById('welcome-msg').innerText = user.volunteerName + " 您好！";
+    } else {
+      document.getElementById('login-msg').innerText = user.message;
+    }
+  } catch (e) {
+    document.getElementById('login-msg').innerText = e.message;
+  }
+}
 
       function goHome() {
         document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
@@ -172,11 +175,35 @@
       }
 
       function logout() {
-        currentVolunteer = {};
-        goHome();
-        document.getElementById('select-section').style.display = 'none';
-        document.getElementById('login-section').style.display = 'block';
-      }
+  localStorage.removeItem('volunteerData'); // 🌟 清除記住的帳號
+  currentVolunteer = {};
+  document.getElementById('vName').value = "";
+  document.getElementById('vId').value = "";
+  document.getElementById('login-msg').innerText = "";
+  
+  document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+  document.getElementById('login-section').style.display = 'block';
+}
+		
+		// 🌟 網頁載入時自動檢查是否已登入過
+window.onload = function() {
+  try {
+    let savedUser = localStorage.getItem('volunteerData');
+    if (savedUser) {
+      currentVolunteer = JSON.parse(savedUser);
+      // 已有登入紀錄，直接隱藏登入頁並跳到功能選單
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('select-section').style.display = 'block';
+      document.getElementById('welcome-msg').innerText = currentVolunteer.volunteerName + " 您好！";
+    } else {
+      // 尚未登入，顯示登入畫面
+      document.getElementById('login-section').style.display = 'block';
+      document.getElementById('select-section').style.display = 'none';
+    }
+  } catch (e) {
+    document.getElementById('login-section').style.display = 'block';
+  }
+};
 
       // 洗牌輔助函式
 function shuffleArray(array) {
