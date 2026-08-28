@@ -5,6 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文教義工檢定模擬考系統</title>
+    <!-- 引入彩帶拉炮套件 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
       body { font-family: 'Arial', sans-serif; padding: 15px; background-color: #f4f6f9; color: #333; margin: 0; font-size: 28px; line-height: 1.5; }
       .container { max-width: 1000px; margin: 20px auto; padding: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: relative; }
@@ -59,9 +61,36 @@
       .loading-container { text-align: center; padding: 60px 0; }
       .spinner { border: 6px solid #f3f3f3; border-top: 6px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+      /* 🌟 娃娃奔跑慶祝專屬動畫與覆蓋層 */
+      #celebration-overlay {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+        z-index: 10000; pointer-events: none; display: none; overflow: visible;
+      }
+      #celebration-overlay img {
+        max-width: 120vw; max-height: 90vh; border-radius: 0; box-shadow: none; border: none;
+      }
+      @keyframes fullCelebrationAnimation {
+        0% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; }
+        15% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+        20% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        25% { top: 20%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        36% { top: 50%; left: 80%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        47% { top: 80%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        58% { top: 50%; left: 20%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        65% { top: 20%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        70% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        85% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        100% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; }
+      }
     </style>
   </head>
   <body>
+    <!-- 慶祝圖層 -->
+    <div id="celebration-overlay">
+      <img src="https://drive.google.com/thumbnail?id=1GzDovlS27xX38_ZjeUTgOlJ5_EutgxrT&sz=w1000" alt="全對恭喜">
+    </div>
+
     <!-- 登入區塊 -->
     <div id="login-section" class="container">
       <h2>義工檢定模擬考系統</h2>
@@ -174,7 +203,6 @@
         if (!name || !id) { alert("請輸入姓名與義工編號"); return; }
         msg.innerText = "驗證登入中，請稍候...";
 
-        // 專用測試帳號直接登入
         if (name === 'edu' && id === 'edu2026') {
           currentVolunteer = { success: true, volunteerId: 'edu2026', volunteerName: 'edu', canEdit: true, canPhoto: true };
           localStorage.setItem('volunteerData', JSON.stringify(currentVolunteer));
@@ -247,7 +275,7 @@
             else singleList.push(q);
           });
 
-          // 嚴格保證：是非 -> 單選 -> 多選 順序
+          // 嚴格依照 是非 -> 單選 -> 多選 順序排序
           currentQuestions = [].concat(shuffleArray(boolList), shuffleArray(singleList), shuffleArray(multiList));
           renderQuizQuestions();
         } catch (e) {
@@ -279,8 +307,30 @@
         document.getElementById('submit-btn').style.display = 'block';
       }
 
+      // 🌟 慶祝特效：滿分時觸發彩帶與娃娃全螢幕奔跑動畫
+      function triggerCelebration() {
+        var overlay = document.getElementById('celebration-overlay');
+        overlay.style.display = 'block';
+        overlay.style.animation = 'fullCelebrationAnimation 5s linear forwards';
+        
+        var duration = 3000;
+        var end = Date.now() + duration;
+        (function frame() {
+          confetti({ particleCount: 15, angle: 60, spread: 55, origin: { x: 0 }, zIndex: 11000 });
+          confetti({ particleCount: 15, angle: 120, spread: 55, origin: { x: 1 }, zIndex: 11000 });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        }());
+        
+        setTimeout(function() {
+          overlay.style.display = 'none';
+          overlay.style.animation = '';
+        }, 5000);
+      }
+
       async function submitQuiz() {
         var results = [];
+        var allCorrect = true;
+
         currentQuestions.forEach(function(q) {
           var isMulti = q.qFormat.indexOf('多') !== -1 || q.qFormat.indexOf('複') !== -1;
           var ansValue = "";
@@ -296,6 +346,8 @@
 
           var dbAns = String(q.answer).toUpperCase().replace(/[\s,、，]/g, '').split('').sort().join(',');
           var isCorrect = (ansValue === dbAns);
+          if (!isCorrect) allCorrect = false;
+
           results.push({ questionId: q.id, qFormat: q.qFormat, userAnswer: ansValue, isCorrect: isCorrect });
         });
 
@@ -323,6 +375,12 @@
           }
 
           document.getElementById('result-container').innerHTML = scoreHtml;
+
+          // 🌟 若總分達 100 分（或全對），觸發全螢幕彩帶與娃娃奔跑慶祝！
+          if (res.roundScore === 100 || allCorrect) {
+            triggerCelebration();
+          }
+
         } catch (e) {
           document.getElementById('result-container').innerHTML = "<p style='color:red;'>計算失敗：" + e.message + "</p>";
         }
