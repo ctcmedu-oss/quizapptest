@@ -371,17 +371,16 @@
             html += "</div></div>";
 
             var expText = String(q.explanation || "").trim();
-            html += "<div class='pr-row' style='border-bottom:none;'><div class='pr-label'>解析</div><div class='pr-content'>";
-            if (expText !== "" && expText !== "undefined" && expText !== "null") {
-               var themeClass = subject === '攝影' ? 'theme-photo' : '';
-               html += "<details class='explanation-details " + themeClass + "' open style='margin-top:0; pointer-events: none;'>";
-               html += "<summary class='explanation-summary'>💡 點此查看重點解析</summary>";
-               html += "<div class='explanation-content'>" + expText + "</div>";
-               html += "</details>";
-            } else {
-               html += "<div style='color:#bdc3c7; font-size:28px; padding: 15px 0;'>無提供解析</div>";
-            }
-            html += "</div></div>";
+			  html += "<div class='pr-row' style='border-bottom:none;'><div class='pr-label'>解析</div><div class='pr-content'>";
+			  if (expText !== "" && expText !== "undefined" && expText !== "null") {
+				  var themeClass = subject === '攝影' ? 'theme-photo' : '';
+				  html += "<div class='explanation-details " + themeClass + "' style='margin-top:0;'>";
+				  html += "<div class='explanation-text'>" + expText + "</div>";
+				  html += "</div>";
+			  } else {
+				  html += "<div style='color:#bdc3c7; font-size:28px; padding: 15px 0;'>無提供解析</div>";
+			  }
+			  html += "</div></div>";
             html += "</div>";
           });
           document.getElementById('all-container').innerHTML = html;
