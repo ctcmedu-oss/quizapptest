@@ -61,6 +61,19 @@
       .loading-container { text-align: center; padding: 60px 0; }
       .spinner { border: 6px solid #f3f3f3; border-top: 6px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 20px auto; }
       @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+		
+	
+		/* 解析區塊樣式 */
+	.explanation-details { background-color: #fdfefe; border: 2px solid #e6ebf0; border-left: 10px solid #f39c12; border-radius: 12px; margin-top: 10px; padding: 20px 25px; }
+	.explanation-summary { font-weight: bold; color: #d35400; font-size: 32px; outline: none; padding-bottom: 10px; list-style: none; }
+	.explanation-summary::-webkit-details-marker { display: none; }
+	.explanation-content { margin-top: 15px; font-size: 30px; line-height: 1.6; color: #34495e; border-top: 2px dashed #fad7a1; padding-top: 15px; white-space: pre-wrap; }
+
+	/* 攝影科目專屬藍色系解析框 */
+	.explanation-details.theme-photo { border-left-color: #3498db; }
+	.explanation-details.theme-photo .explanation-summary { color: #2980b9; }
+	.explanation-details.theme-photo .explanation-content { border-top-color: #a9cce3; }	
+		
     </style>
   </head>
   <body>
@@ -362,17 +375,21 @@ html += "<div class='q-title-text'>" + q.text + "</div></div></div>";
             html += "</div></div>";
 
             // 解析列
-            html += "<div class='pr-row'><div class='pr-label'>重點解析</div><div class='pr-content' style='color:#7f8c8d;'>";
-            html += q.explanation ? q.explanation : "無解析";
-            html += "</div></div>";
-
-            html += "</div>";
-          });
-          document.getElementById('all-container').innerHTML = html;
-        } catch (e) {
-          document.getElementById('all-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
-        }
-      }
+			  let expText = String(q.explanation || "").trim();
+			  html += "<div class='pr-row' style='border-bottom:none;'>";
+			  html += "  <div class='pr-label'>解析</div>";
+			  html += "  <div class='pr-content'>";
+			  if (expText !== "" && expText !== "undefined" && expText !== "null") {
+				  let themeClass = subject === '攝影' ? 'theme-photo' : '';
+				  html += "<details class='explanation-details " + themeClass + "' open style='margin-top:0; pointer-events: none;'>";
+				  html += "<summary class='explanation-summary'>💡 點此查看重點解析</summary>";
+				  html += "<div class='explanation-content'>" + expText + "</div>";
+				  html += "</details>";
+			  	} else {
+					html += "<div style='color:#bdc3c7; font-size:28px; padding: 15px 0;'>無提供解析</div>";
+				}
+			  html += "  </div>";
+			  html += "</div>";
     </script>
   </body>
 </html>
