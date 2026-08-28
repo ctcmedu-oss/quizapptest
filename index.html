@@ -543,38 +543,70 @@
       }
 
       async function openHistoryView() {
-        var sidebar = document.getElementById('sidebar');
-        if (sidebar.classList.contains('open')) toggleSidebar();
+  var sidebar = document.getElementById('sidebar');
+  if (sidebar && sidebar.classList.contains('open')) toggleSidebar();
 
-        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
-        document.getElementById('history-section').style.display = 'block';
-        document.getElementById('history-container').innerHTML = "<div class='loading-container'><div class='spinner'></div>載入歷次模擬考成績中...</div>";
+  document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+  document.getElementById('history-section').style.display = 'block';
+  document.getElementById('history-container').innerHTML = "<div class='loading-container'><div class='spinner'></div>載入歷次模擬考成績中...</div>";
 
-        try {
-          var history = await callApi('getAllHistoryScores', { vId: currentVolunteer.volunteerId });
-          if (!history || history.length === 0) {
-            document.getElementById('history-container').innerHTML = "<p style='text-align:center; font-size:30px; color:#7f8c8d; padding:40px 0;'>尚無模擬考測驗紀錄</p>";
-            return;
-          }
+  try {
+    var history = await callApi('getAllHistoryScores', { vId: currentVolunteer.volunteerId });
+    if (!history || history.length === 0) {
+      document.getElementById('history-container').innerHTML = "<p style='text-align:center; font-size:30px; color:#7f8c8d; padding:40px 0;'>尚無模擬考測驗紀錄</p>";
+      return;
+    }
 
-          var html = "<table class='history-table'>";
-          html += "<thead><tr><th>測驗時間</th><th>檢定科目</th><th>週次</th><th>測驗得分</th></tr></thead><tbody>";
-          history.forEach(function(item) {
-            var color = item.subject === '攝影' ? '#2980b9' : '#e67e22';
-            html += "<tr>";
-            html += "<td>" + item.date + "</td>";
-            html += "<td><b style='color:" + color + ";'>" + item.subject + "</b></td>";
-            html += "<td>第 " + item.week + " 週</td>";
-            html += "<td><b style='font-size:32px; color:" + (item.score === 100 ? '#27ae60' : color) + ";'>" + item.score + " 分</b></td>";
-            html += "</tr>";
-          });
-          html += "</tbody></table>";
+    var editList = history.filter(item => item.subject === '文編');
+    var photoList = history.filter(item => item.subject === '攝影');
 
-          document.getElementById('history-container').innerHTML = html;
-        } catch (e) {
-          document.getElementById('history-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
-        }
-      }
+    var html = "";
+
+    // 🌟 1. 初階文編成績表格（橘色主題）
+    html += "<div style='margin-bottom: 40px;'>";
+    html += "<h3 style='font-size:34px; color:#e67e22; border-left:8px solid #e67e22; padding-left:15px; margin:20px 0 15px 0;'>📝 初階文編 模擬考紀錄</h3>";
+    if (editList.length > 0) {
+      html += "<table class='history-table'>";
+      html += "<thead><tr style='background-color:#fef5e7;'><th style='color:#d35400;'>測驗時間</th><th style='color:#d35400;'>週次</th><th style='color:#d35400;'>測驗得分</th></tr></thead><tbody>";
+      editList.forEach(function(item) {
+        var scoreColor = item.score === 100 ? '#27ae60' : '#e67e22';
+        html += "<tr>";
+        html += "<td>" + item.date + "</td>";
+        html += "<td>第 " + item.week + " 週</td>";
+        html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
+        html += "</tr>";
+      });
+      html += "</tbody></table>";
+    } else {
+      html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無文編模擬考紀錄</p>";
+    }
+    html += "</div>";
+
+    // 🌟 2. 初階攝影成績表格（藍色主題）
+    html += "<div style='margin-bottom: 20px;'>";
+    html += "<h3 style='font-size:34px; color:#2980b9; border-left:8px solid #2980b9; padding-left:15px; margin:20px 0 15px 0;'>📷 初階攝影 模擬考紀錄</h3>";
+    if (photoList.length > 0) {
+      html += "<table class='history-table'>";
+      html += "<thead><tr style='background-color:#ebf5fb;'><th style='color:#2471a3;'>測驗時間</th><th style='color:#2471a3;'>週次</th><th style='color:#2471a3;'>測驗得分</th></tr></thead><tbody>";
+      photoList.forEach(function(item) {
+        var scoreColor = item.score === 100 ? '#27ae60' : '#2980b9';
+        html += "<tr>";
+        html += "<td>" + item.date + "</td>";
+        html += "<td>第 " + item.week + " 週</td>";
+        html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
+        html += "</tr>";
+      });
+      html += "</tbody></table>";
+    } else {
+      html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無攝影模擬考紀錄</p>";
+    }
+    html += "</div>";
+
+    document.getElementById('history-container').innerHTML = html;
+  } catch (e) {
+    document.getElementById('history-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
+  }
+}
     </script>
   </body>
 </html>
