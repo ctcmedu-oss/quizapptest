@@ -41,7 +41,15 @@
         box-shadow: 0 6px 15px rgba(0,0,0,0.15);
       }
 
-      .q-block { margin-bottom: 40px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+      .q-block { margin-bottom: 40px; border-bottom: 2px solid #eee; padding: 15px; border-radius: 12px; transition: all 0.3s; }
+      
+      /* 🌟 防呆：未作答題目的醒目紅框樣式 */
+      .q-block.unanswered-warning {
+        border: 3px solid #e74c3c !important;
+        background-color: #fdf2f2 !important;
+        box-shadow: 0 0 15px rgba(231, 76, 60, 0.25);
+      }
+
       .q-header { display: flex; align-items: flex-start; margin-bottom: 20px; }
       .q-number { font-size: 32px; font-weight: bold; color: #34495e; margin-right: 12px; flex-shrink: 0; }
       .q-content { display: flex; flex-direction: row; align-items: flex-start; flex-grow: 1; }
@@ -107,7 +115,7 @@
         100% { top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; }
       }
 		
-	/* 考卷頂部配分說明欄 */
+      /* 考卷頂部配分說明欄 */
       .exam-score-info {
         background-color: #f8fafc;
         border: 2px solid #e2e8f0;
@@ -219,7 +227,7 @@
     </div>
 
     <script>
-      const API_URL = "https://script.google.com/macros/s/AKfycbz-NIlI9Sz9qaZosDtuI-JbXh3-nqCImZXMn96bjkuJ6VDSFyTr_8XU9LcvzPZnDgLr7w/exec";
+      const API_URL = "https://script.google.com/macros/s/AKfycbzsrIc1TGYjBIkqm1O4gaSwn3pA2i40HU8rFJHcvqt0P0-yOek0aXhQAErIrFGKx1OWXA/exec";
 
       let currentVolunteer = {};
       let currentQuestions = [];
@@ -359,6 +367,13 @@
         }
       }
 
+      function clearWarning(qId) {
+        var el = document.getElementById('q-wrap-' + qId);
+        if (el) {
+          el.classList.remove('unanswered-warning');
+        }
+      }
+
       function renderQuizQuestions() {
         var html = "";
 
@@ -390,7 +405,7 @@
           ['A', 'B', 'C', 'D', 'E'].forEach(function(k) {
             if (q.options && q.options[k]) {
               html += "<label>";
-              html += "<input class='custom-input' type='" + inputType + "' name='q_" + q.id + "' value='" + k + "'>";
+              html += "<input class='custom-input' type='" + inputType + "' name='q_" + q.id + "' value='" + k + "' onchange=\"clearWarning('" + q.id + "')\">";
               html += "<span class='circle-marker'></span>";
               html += "<div class='opt-text'>" + k + ". " + q.options[k] + "</div>";
               html += "</label>";
@@ -423,6 +438,49 @@
       }
 
       async function submitQuiz() {
+        // 先清除所有殘留紅框
+        document.querySelectorAll('.q-block').forEach(el => el.classList.remove('unanswered-warning'));
+
+        var unAnswered = [];
+        var firstUnansweredElem = null;
+
+        // 🌟 1. 執行未作答檢查防呆
+        currentQuestions.forEach(function(q, idx) {
+          var isMulti = q.qFormat.indexOf('多') !== -1 || q.qFormat.indexOf('複') !== -1;
+          var isAnswered = false;
+
+          if (isMulti) {
+            var selected = document.querySelectorAll("input[name='q_" + q.id + "']:checked");
+            if (selected.length > 0) isAnswered = true;
+          } else {
+            var selectedSingle = document.querySelector("input[name='q_" + q.id + "']:checked");
+            if (selectedSingle) isAnswered = true;
+          }
+
+          if (!isAnswered) {
+            unAnswered.push(idx + 1);
+            var qElem = document.getElementById('q-wrap-' + q.id);
+            if (qElem) {
+              qElem.classList.add('unanswered-warning');
+              if (!firstUnansweredElem) {
+                firstUnansweredElem = qElem;
+              }
+            }
+          }
+        });
+
+        // 🌟 2. 若有未作答題目，跳出警示並平滑滾動至第一道未填題目
+        if (unAnswered.length > 0) {
+          var alertMsg = "⚠️ 您還有 " + unAnswered.length + " 題尚未作答！\n\n漏填題號：第 " + unAnswered.join(", ") + " 題\n\n請將所有題目填寫完畢後再送出成績。";
+          alert(alertMsg);
+
+          if (firstUnansweredElem) {
+            firstUnansweredElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return; // 終止送出
+        }
+
+        // 🌟 3. 全數填寫完畢，進行計分與送出
         var results = [];
         var wrongQuestions = [];
         var allCorrect = true;
@@ -590,70 +648,70 @@
       }
 
       async function openHistoryView() {
-  var sidebar = document.getElementById('sidebar');
-  if (sidebar && sidebar.classList.contains('open')) toggleSidebar();
+        var sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('open')) toggleSidebar();
 
-  document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
-  document.getElementById('history-section').style.display = 'block';
-  document.getElementById('history-container').innerHTML = "<div class='loading-container'><div class='spinner'></div>載入歷次模擬考成績中...</div>";
+        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+        document.getElementById('history-section').style.display = 'block';
+        document.getElementById('history-container').innerHTML = "<div class='loading-container'><div class='spinner'></div>載入歷次模擬考成績中...</div>";
 
-  try {
-    var history = await callApi('getAllHistoryScores', { vId: currentVolunteer.volunteerId });
-    if (!history || history.length === 0) {
-      document.getElementById('history-container').innerHTML = "<p style='text-align:center; font-size:30px; color:#7f8c8d; padding:40px 0;'>尚無模擬考測驗紀錄</p>";
-      return;
-    }
+        try {
+          var history = await callApi('getAllHistoryScores', { vId: currentVolunteer.volunteerId });
+          if (!history || history.length === 0) {
+            document.getElementById('history-container').innerHTML = "<p style='text-align:center; font-size:30px; color:#7f8c8d; padding:40px 0;'>尚無模擬考測驗紀錄</p>";
+            return;
+          }
 
-    var editList = history.filter(item => item.subject === '文編');
-    var photoList = history.filter(item => item.subject === '攝影');
+          var editList = history.filter(item => item.subject === '文編');
+          var photoList = history.filter(item => item.subject === '攝影');
 
-    var html = "";
+          var html = "";
 
-    // 🌟 1. 初階文編成績表格（橘色主題）
-    html += "<div style='margin-bottom: 40px;'>";
-    html += "<h3 style='font-size:34px; color:#e67e22; border-left:8px solid #e67e22; padding-left:15px; margin:20px 0 15px 0;'>📝 初階文編 模擬考紀錄</h3>";
-    if (editList.length > 0) {
-      html += "<table class='history-table'>";
-      html += "<thead><tr style='background-color:#fef5e7;'><th style='color:#d35400;'>測驗時間</th><th style='color:#d35400;'>週次</th><th style='color:#d35400;'>測驗得分</th></tr></thead><tbody>";
-      editList.forEach(function(item) {
-        var scoreColor = item.score === 100 ? '#27ae60' : '#e67e22';
-        html += "<tr>";
-        html += "<td>" + item.date + "</td>";
-        html += "<td>第 " + item.week + " 週</td>";
-        html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
-        html += "</tr>";
-      });
-      html += "</tbody></table>";
-    } else {
-      html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無文編模擬考紀錄</p>";
-    }
-    html += "</div>";
+          // 🌟 1. 初階文編成績表格（橘色主題）
+          html += "<div style='margin-bottom: 40px;'>";
+          html += "<h3 style='font-size:34px; color:#e67e22; border-left:8px solid #e67e22; padding-left:15px; margin:20px 0 15px 0;'>📝 初階文編 模擬考紀錄</h3>";
+          if (editList.length > 0) {
+            html += "<table class='history-table'>";
+            html += "<thead><tr style='background-color:#fef5e7;'><th style='color:#d35400;'>測驗時間</th><th style='color:#d35400;'>週次</th><th style='color:#d35400;'>測驗得分</th></tr></thead><tbody>";
+            editList.forEach(function(item) {
+              var scoreColor = item.score === 100 ? '#27ae60' : '#e67e22';
+              html += "<tr>";
+              html += "<td>" + item.date + "</td>";
+              html += "<td>第 " + item.week + " 週</td>";
+              html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
+              html += "</tr>";
+            });
+            html += "</tbody></table>";
+          } else {
+            html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無文編模擬考紀錄</p>";
+          }
+          html += "</div>";
 
-    // 🌟 2. 初階攝影成績表格（藍色主題）
-    html += "<div style='margin-bottom: 20px;'>";
-    html += "<h3 style='font-size:34px; color:#2980b9; border-left:8px solid #2980b9; padding-left:15px; margin:20px 0 15px 0;'>📷 初階攝影 模擬考紀錄</h3>";
-    if (photoList.length > 0) {
-      html += "<table class='history-table'>";
-      html += "<thead><tr style='background-color:#ebf5fb;'><th style='color:#2471a3;'>測驗時間</th><th style='color:#2471a3;'>週次</th><th style='color:#2471a3;'>測驗得分</th></tr></thead><tbody>";
-      photoList.forEach(function(item) {
-        var scoreColor = item.score === 100 ? '#27ae60' : '#2980b9';
-        html += "<tr>";
-        html += "<td>" + item.date + "</td>";
-        html += "<td>第 " + item.week + " 週</td>";
-        html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
-        html += "</tr>";
-      });
-      html += "</tbody></table>";
-    } else {
-      html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無攝影模擬考紀錄</p>";
-    }
-    html += "</div>";
+          // 🌟 2. 初階攝影成績表格（藍色主題）
+          html += "<div style='margin-bottom: 20px;'>";
+          html += "<h3 style='font-size:34px; color:#2980b9; border-left:8px solid #2980b9; padding-left:15px; margin:20px 0 15px 0;'>📷 初階攝影 模擬考紀錄</h3>";
+          if (photoList.length > 0) {
+            html += "<table class='history-table'>";
+            html += "<thead><tr style='background-color:#ebf5fb;'><th style='color:#2471a3;'>測驗時間</th><th style='color:#2471a3;'>週次</th><th style='color:#2471a3;'>測驗得分</th></tr></thead><tbody>";
+            photoList.forEach(function(item) {
+              var scoreColor = item.score === 100 ? '#27ae60' : '#2980b9';
+              html += "<tr>";
+              html += "<td>" + item.date + "</td>";
+              html += "<td>第 " + item.week + " 週</td>";
+              html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
+              html += "</tr>";
+            });
+            html += "</tbody></table>";
+          } else {
+            html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無攝影模擬考紀錄</p>";
+          }
+          html += "</div>";
 
-    document.getElementById('history-container').innerHTML = html;
-  } catch (e) {
-    document.getElementById('history-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
-  }
-}
+          document.getElementById('history-container').innerHTML = html;
+        } catch (e) {
+          document.getElementById('history-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
+        }
+      }
     </script>
   </body>
 </html>
