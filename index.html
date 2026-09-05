@@ -684,18 +684,38 @@
 
         try {
           var questions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject, mode: 'all' });
+          
+          // 🌟 1. 依「是非題 -> 單選題 -> 多選題」分類排序
+          var boolList = [], singleList = [], multiList = [];
+          questions.forEach(function(q) {
+            var fmt = String(q.qFormat || '').trim();
+            if (fmt.indexOf('是非') !== -1) {
+              boolList.push(q);
+            } else if (fmt.indexOf('多') !== -1 || fmt.indexOf('複') !== -1) {
+              multiList.push(q);
+            } else {
+              singleList.push(q);
+            }
+          });
+
+          var sortedQuestions = [].concat(boolList, singleList, multiList);
+
+          // 🌟 2. 渲染題目
           var html = "";
-          questions.forEach(function(q, idx) {
+          sortedQuestions.forEach(function(q, idx) {
             var isMulti = q.qFormat.indexOf('多') !== -1 || q.qFormat.indexOf('複') !== -1;
             var isBool = q.qFormat.indexOf('是非') !== -1;
             var badgeClass = isMulti ? 'badge-multi' : (isBool ? 'badge-boolean' : 'badge-single');
 
             html += "<div class='pr-block'>";
+            
+            // 題號與題型標籤同一排置頂
             html += "<div class='pr-row'><div class='pr-label'>第 " + (idx + 1) + " 題</div><div class='pr-content'>";
             html += "<span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span>";
             html += "<div style='font-weight:bold; font-size:32px; margin-top:10px;'>" + q.text + "</div>";
             html += "</div></div>";
 
+            // 答案選項區
             html += "<div class='pr-row'><div class='pr-label'>答案</div><div class='pr-content'>";
             var dbAns = String(q.answer).toUpperCase();
             ['A', 'B', 'C', 'D', 'E'].forEach(function(k) {
@@ -707,6 +727,7 @@
             });
             html += "</div></div>";
 
+            // 解析區
             var expText = String(q.explanation || "").trim();
             html += "<div class='pr-row' style='border-bottom:none;'><div class='pr-label'>解析</div><div class='pr-content'>";
             if (expText !== "" && expText !== "undefined" && expText !== "null") {
@@ -720,73 +741,10 @@
             html += "</div></div>";
             html += "</div>";
           });
+
           document.getElementById('all-container').innerHTML = html;
         } catch (e) {
           document.getElementById('all-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
-        }
-      }
-
-      async function openHistoryView() {
-        var sidebar = document.getElementById('sidebar');
-        if (sidebar && sidebar.classList.contains('open')) toggleSidebar();
-
-        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
-        document.getElementById('history-section').style.display = 'block';
-        document.getElementById('history-container').innerHTML = "<div class='loading-container'><div class='spinner'></div>載入歷次模擬考成績中...</div>";
-
-        try {
-          var history = await callApi('getAllHistoryScores', { vId: currentVolunteer.volunteerId });
-          if (!history || history.length === 0) {
-            document.getElementById('history-container').innerHTML = "<p style='text-align:center; font-size:30px; color:#7f8c8d; padding:40px 0;'>尚無模擬考測驗紀錄</p>";
-            return;
-          }
-
-          var editList = history.filter(item => item.subject === '文編');
-          var photoList = history.filter(item => item.subject === '攝影');
-
-          var html = "";
-
-          html += "<div style='margin-bottom: 40px;'>";
-          html += "<h3 style='font-size:34px; color:#e67e22; border-left:8px solid #e67e22; padding-left:15px; margin:20px 0 15px 0;'>📝 初階文編 模擬考紀錄</h3>";
-          if (editList.length > 0) {
-            html += "<table class='history-table'>";
-            html += "<thead><tr style='background-color:#fef5e7;'><th style='color:#d35400;'>測驗時間</th><th style='color:#d35400;'>週次</th><th style='color:#d35400;'>測驗得分</th></tr></thead><tbody>";
-            editList.forEach(function(item) {
-              var scoreColor = item.score === 100 ? '#27ae60' : '#e67e22';
-              html += "<tr>";
-              html += "<td>" + item.date + "</td>";
-              html += "<td>第 " + item.week + " 週</td>";
-              html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
-              html += "</tr>";
-            });
-            html += "</tbody></table>";
-          } else {
-            html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無文編模擬考紀錄</p>";
-          }
-          html += "</div>";
-
-          html += "<div style='margin-bottom: 20px;'>";
-          html += "<h3 style='font-size:34px; color:#2980b9; border-left:8px solid #2980b9; padding-left:15px; margin:20px 0 15px 0;'>📷 初階攝影 模擬考紀錄</h3>";
-          if (photoList.length > 0) {
-            html += "<table class='history-table'>";
-            html += "<thead><tr style='background-color:#ebf5fb;'><th style='color:#2471a3;'>測驗時間</th><th style='color:#2471a3;'>週次</th><th style='color:#2471a3;'>測驗得分</th></tr></thead><tbody>";
-            photoList.forEach(function(item) {
-              var scoreColor = item.score === 100 ? '#27ae60' : '#2980b9';
-              html += "<tr>";
-              html += "<td>" + item.date + "</td>";
-              html += "<td>第 " + item.week + " 週</td>";
-              html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
-              html += "</tr>";
-            });
-            html += "</tbody></table>";
-          } else {
-            html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無攝影模擬考紀錄</p>";
-          }
-          html += "</div>";
-
-          document.getElementById('history-container').innerHTML = html;
-        } catch (e) {
-          document.getElementById('history-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
         }
       }
     </script>
