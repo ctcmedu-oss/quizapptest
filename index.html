@@ -24,7 +24,7 @@
       .sidebar-item { padding: 18px 15px; border-bottom: 1px solid #eee; font-size: 30px; font-weight: bold; color: #2c3e50; cursor: pointer; display: flex; align-items: center; gap: 12px; }
       .sidebar-item:hover { background-color: #f8f9fa; }
 
-      .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+      .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
       @media (max-width: 768px) { .menu-grid { grid-template-columns: 1fr; } }
       .btn-portal { padding: 30px 20px; border-radius: 16px; font-weight: bold; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-decoration: none; border: none; transition: transform 0.2s, filter 0.2s, box-shadow 0.2s; }
       
@@ -34,14 +34,14 @@
       .btn-photo-mock { background-color: #3498db !important; }
       .btn-photo-all { background-color: #2980b9 !important; }
 
-      /* 🌟 滑鼠移過去時：原色加亮 15% + 輕微放大微浮，不改變原本顏色 */
+      /* 🌟 滑鼠移過去時：原色加亮 15% + 輕微放大微浮 */
       .btn-portal:hover {
         filter: brightness(1.15);
         transform: translateY(-3px);
         box-shadow: 0 6px 15px rgba(0,0,0,0.15);
       }
 
-      .q-block { margin-bottom: 40px; border-bottom: 2px solid #eee; padding: 15px; border-radius: 12px; transition: all 0.3s; }
+      .q-block { margin-bottom: 35px; border-bottom: 2px solid #eee; padding: 15px; border-radius: 12px; transition: all 0.3s; }
       
       /* 🌟 防呆：未作答題目的醒目紅框樣式 */
       .q-block.unanswered-warning {
@@ -50,18 +50,37 @@
         box-shadow: 0 0 15px rgba(231, 76, 60, 0.25);
       }
 
-      .q-header { display: flex; align-items: flex-start; margin-bottom: 20px; }
-      .q-number { font-size: 32px; font-weight: bold; color: #34495e; margin-right: 12px; flex-shrink: 0; }
-      .q-content { display: flex; flex-direction: row; align-items: flex-start; flex-grow: 1; }
-      .q-badge-wrapper { flex-shrink: 0; margin-right: 15px; }
-      .q-title-text { font-size: 32px; font-weight: bold; color: #34495e; line-height: 1.5; flex-grow: 1; word-break: break-word; }
+      /* 🌟 題號與題型同一排橫向對齊 */
+      .q-header { 
+        display: flex; 
+        flex-direction: row; 
+        align-items: center; 
+        gap: 12px; 
+        margin-bottom: 12px; 
+      }
+      .q-number { 
+        font-size: 32px; 
+        font-weight: bold; 
+        color: #2c3e50; 
+      }
       
-      .q-type-badge { display: inline-block; padding: 6px 12px; border-radius: 8px; font-size: 26px; font-weight: bold; color: white; white-space: nowrap; }
+      /* 🌟 題目文字整行獨立展開 */
+      .q-title-text { 
+        width: 100%; 
+        font-size: 30px; 
+        font-weight: bold; 
+        color: #2c3e50; 
+        line-height: 1.6; 
+        margin-bottom: 15px; 
+        word-break: break-word; 
+      }
+      
+      .q-type-badge { display: inline-block; padding: 4px 14px; border-radius: 8px; font-size: 24px; font-weight: bold; color: white; white-space: nowrap; }
       .badge-single { background-color: #3498db; } 
       .badge-boolean { background-color: #27ae60; } 
       .badge-multi { background-color: #e67e22; }
 
-      /* 🌟 統一自訂圓圈選項樣式（多選題也是藍色圓圈選擇） */
+      /* 自訂圓圈選項樣式 */
       .q-block label { display: flex; align-items: flex-start; padding: 15px 20px; border-radius: 12px; cursor: pointer; line-height: 1.5; font-size: 32px; margin-bottom: 8px; transition: background 0.2s; }
       .q-block label:hover { background-color: #f8f9fa; }
       
@@ -73,7 +92,7 @@
       .sticky-header { position: sticky; top: 0; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); z-index: 999; padding: 20px; border-bottom: 2px solid #e6ebf0; display: flex; justify-content: space-between; align-items: center; border-radius: 12px 12px 0 0; }
       .back-btn-text { width: auto !important; margin: 0 !important; font-size: 22px !important; padding: 10px 20px !important; background-color: #95a5a6 !important; border-radius: 30px !important; }
 
-      /* 解析區塊樣式（保留 Excel 換行） */
+      /* 解析區塊樣式 */
       .explanation-details { background-color: #fdfefe; border: 2px solid #e6ebf0; border-left: 10px solid #f39c12; border-radius: 12px; margin-top: 15px; padding: 20px 25px; white-space: pre-wrap; line-height: 1.6; font-size: 30px; color: #34495e; }
       .explanation-details.theme-photo { border-left-color: #3498db; }
 
@@ -84,7 +103,7 @@
       .pr-label { width: 140px; flex-shrink: 0; font-size: 32px; font-weight: bold; color: #2c3e50; }
       .pr-content { flex-grow: 1; }
 
-      /* 🌟 經典成績卡片樣式 */
+      /* 成績卡片樣式 */
       .result-card-edit { background: #fffaf4; border: 3px solid #e67e22; border-radius: 16px; padding: 30px 20px; text-align: center; margin-bottom: 30px; }
       .result-card-photo { background: #f4faff; border: 3px solid #3498db; border-radius: 16px; padding: 30px 20px; text-align: center; margin-bottom: 30px; }
       
@@ -139,6 +158,14 @@
     </style>
   </head>
   <body>
+
+    <!-- 🌟 時間未到（9/1 凌晨前）顯示的換檔公告圖片區塊 -->
+    <div id="maintenance-overlay" style="display: none; text-align: center; padding: 20px; min-height: 100vh; background-color: #f4f6f9; box-sizing: border-box;">
+      <div style="max-width: 900px; margin: 30px auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+        <img src="https://drive.google.com/thumbnail?id=1UHC596mY2PKY-NVaWw7W7d4b38Utjws3&sz=w1200" alt="系統換檔維護公告" style="width: 100%; max-width: 850px; height: auto; border-radius: 10px; display: block; margin: 0 auto;">
+      </div>
+    </div>
+
     <!-- 慶祝圖層 -->
     <div id="celebration-overlay">
       <img src="https://drive.google.com/thumbnail?id=1GzDovlS27xX38_ZjeUTgOlJ5_EutgxrT&sz=w1000" alt="全對恭喜">
@@ -155,7 +182,7 @@
 
     <!-- 登入區塊 -->
     <div id="login-section" class="container">
-      <h2>義工檢定模擬考系統</h2>
+      <h2>文教義工檢定模擬考系統</h2>
       <input type="text" id="vName" placeholder="請輸入姓名">
       <input type="text" id="vId" placeholder="請輸入義工編號">
       <button type="button" onclick="login()">登入系統</button>
@@ -166,9 +193,9 @@
     <div id="select-section" class="container" style="display:none;">
       <button class="hamburger-btn" onclick="toggleSidebar()">☰</button>
       <h2 id="welcome-msg" style="margin-top: 10px;"></h2>
-      <p style="text-align:center; font-size: 32px; color: #555; margin-bottom: 10px;">請選擇檢定類別或查看題庫：</p>
+      <p style="text-align:center; font-size: 32px; color: #555; margin-bottom: 5px;">請選擇檢定類別或查看題庫：</p>
       
-      <!-- 🌟 新增：清楚醒目的週次標籤 -->
+      <!-- 🌟 週次橫幅顯示位置 -->
       <div id="current-week-banner" style="text-align: center; margin: 15px auto 25px auto;"></div>
       
       <div class="menu-grid">
@@ -231,14 +258,58 @@
 
     <script>
       const API_URL = "https://script.google.com/macros/s/AKfycbzsrIc1TGYjBIkqm1O4gaSwn3pA2i40HU8rFJHcvqt0P0-yOek0aXhQAErIrFGKx1OWXA/exec";
-      // 🌟 測試站專屬環境設定
-      const CURRENT_ENV = "test";
+      
+      // 🌟 環境設定：正式主站填 "prod"，測試站填 "test"
+      const CURRENT_ENV = "test"; 
 
       let currentVolunteer = {};
       let currentQuestions = [];
       let currentSubject = "";
 
+      // 🌟 計算目前顯示的週次 (測試站自動 +1 週)
+      function getDisplayWeek() {
+        var startDate = new Date('2026/08/31 00:00:00'); 
+        var today = new Date();
+        var week = 16;
+        if (today >= startDate) {
+          var diff = today.getTime() - startDate.getTime();
+          var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          week = 16 + Math.floor(days / 7);
+        }
+        if (week > 21) week = 21;
+
+        if (typeof CURRENT_ENV !== 'undefined' && CURRENT_ENV === 'test') {
+          week = week + 1;
+          if (week > 21) week = 21;
+        }
+        return week;
+      }
+
+      // 🌟 渲染週次橫幅文字
+      function updateWeekBanner() {
+        var weekNum = getDisplayWeek();
+        var banner = document.getElementById('current-week-banner');
+        if (!banner) return;
+
+        if (typeof CURRENT_ENV !== 'undefined' && CURRENT_ENV === 'test') {
+          banner.innerHTML = "<span style='display:inline-block; background-color:#e67e22; color:white; padding:8px 24px; border-radius:30px; font-size:26px; font-weight:bold; box-shadow:0 2px 8px rgba(230,126,34,0.3);'>📅 目前進度：第 " + weekNum + " 週模擬考（測試站預先校對）</span>";
+        } else {
+          banner.innerHTML = "<span style='display:inline-block; background-color:#2c3e50; color:white; padding:8px 24px; border-radius:30px; font-size:26px; font-weight:bold;'>📅 目前進度：第 " + weekNum + " 週模擬考</span>";
+        }
+      }
+
       window.onload = function() {
+        var now = new Date();
+        var mockStartDate = new Date('2026/09/01 00:00:00');
+
+        // 正式站才受 9/1 時間閘門限制；測試站不受限，隨時可進
+        if (CURRENT_ENV === 'prod' && now < mockStartDate) {
+          document.querySelectorAll('.container').forEach(function(c) { c.style.display = 'none'; });
+          document.getElementById('maintenance-overlay').style.display = 'block';
+          return;
+        }
+
+        document.getElementById('maintenance-overlay').style.display = 'none';
         try {
           var savedUser = localStorage.getItem('volunteerData');
           if (savedUser) {
@@ -246,6 +317,7 @@
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('select-section').style.display = 'block';
             document.getElementById('welcome-msg').innerText = currentVolunteer.volunteerName + " 您好！";
+            updateWeekBanner(); // 🌟 進入首頁更新週次
           } else {
             document.getElementById('login-section').style.display = 'block';
           }
@@ -269,7 +341,6 @@
 
       async function callApi(action, data) {
         try {
-          // 🌟 自動帶入 env 參數
           var payload = Object.assign({ action: action, env: CURRENT_ENV }, data);
           var response = await fetch(API_URL, {
             method: 'POST',
@@ -301,6 +372,7 @@
           document.getElementById('login-section').style.display = 'none';
           document.getElementById('select-section').style.display = 'block';
           document.getElementById('welcome-msg').innerText = "edu 您好！";
+          updateWeekBanner(); // 🌟 登入成功更新週次
           return;
         }
 
@@ -313,6 +385,7 @@
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('select-section').style.display = 'block';
             document.getElementById('welcome-msg').innerText = user.volunteerName + " 您好！";
+            updateWeekBanner(); // 🌟 登入成功更新週次
           } else {
             msg.innerText = (user && user.message) ? user.message : "姓名或編號錯誤";
           }
@@ -324,6 +397,7 @@
       function goHome() {
         document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
         document.getElementById('select-section').style.display = 'block';
+        updateWeekBanner(); // 🌟 返回首頁更新週次
       }
 
       function logout() {
@@ -383,7 +457,7 @@
       function renderQuizQuestions() {
         var html = "";
 
-        // 🌟 考卷頂部配分說明區（依科目動態切換）
+        // 考卷頂部配分說明區
         html += "<div class='exam-score-info'>";
         html += "<b>📝 測驗說明與配分：</b>本試卷共 45 題，滿分 100 分。<br>";
         if (currentSubject === '文編') {
@@ -404,9 +478,15 @@
           var inputType = isMulti ? 'checkbox' : 'radio';
 
           html += "<div class='q-block' id='q-wrap-" + q.id + "'>";
-          html += "<div class='q-header'><div class='q-number'>" + (idx + 1) + ".</div>";
-          html += "<div class='q-content'><div class='q-badge-wrapper'><span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span></div>";
-          html += "<div class='q-title-text'>" + q.text + "</div></div></div>";
+          
+          // 題號與題型並排
+          html += "<div class='q-header'>";
+          html += "<span class='q-number'>" + (idx + 1) + ".</span>";
+          html += "<span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span>";
+          html += "</div>";
+
+          // 題目文字整行獨立展開
+          html += "<div class='q-title-text'>" + q.text + "</div>";
 
           ['A', 'B', 'C', 'D', 'E'].forEach(function(k) {
             if (q.options && q.options[k]) {
@@ -444,13 +524,11 @@
       }
 
       async function submitQuiz() {
-        // 先清除所有殘留紅框
         document.querySelectorAll('.q-block').forEach(el => el.classList.remove('unanswered-warning'));
 
         var unAnswered = [];
         var firstUnansweredElem = null;
 
-        // 🌟 1. 執行未作答檢查防呆
         currentQuestions.forEach(function(q, idx) {
           var isMulti = q.qFormat.indexOf('多') !== -1 || q.qFormat.indexOf('複') !== -1;
           var isAnswered = false;
@@ -475,7 +553,6 @@
           }
         });
 
-        // 🌟 2. 若有未作答題目，跳出警示並平滑滾動至第一道未填題目
         if (unAnswered.length > 0) {
           var alertMsg = "⚠️ 您還有 " + unAnswered.length + " 題尚未作答！\n\n漏填題號：第 " + unAnswered.join(", ") + " 題\n\n請將所有題目填寫完畢後再送出成績。";
           alert(alertMsg);
@@ -483,10 +560,9 @@
           if (firstUnansweredElem) {
             firstUnansweredElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
-          return; // 終止送出
+          return;
         }
 
-        // 🌟 3. 全數填寫完畢，進行計分與送出
         var results = [];
         var wrongQuestions = [];
         var allCorrect = true;
@@ -534,7 +610,6 @@
           scoreHtml += "<div style='font-size:32px; font-weight:bold; margin-top:15px;'>本次獲得分數：<span style='font-size:46px; color:" + highlightColor + ";'>" + res.roundScore + " 分</span> (滿分 100)</div>";
           scoreHtml += "</div>";
 
-          // 錯題檢討與解析區塊
           if (wrongQuestions.length > 0) {
             scoreHtml += "<h3 style='font-size:34px; color:#c0392b; margin-top:30px; border-left:8px solid #c0392b; padding-left:15px;'>❌ 錯題檢討與重點解析 (" + wrongQuestions.length + " 題)</h3>";
             wrongQuestions.forEach(function(item, idx) {
@@ -576,7 +651,6 @@
             });
           }
 
-          // 分數計算說明
           scoreHtml += "<div class='info-notice-box'>";
           scoreHtml += "<b style='font-size:28px; color:#2c3e50;'>📌 分數計算說明：</b><br>";
           scoreHtml += "1. 8/31～10/11 共 6 週為模擬考週，每週刷新題庫 45 題。<br>";
@@ -585,7 +659,6 @@
           scoreHtml += "&nbsp;&nbsp;• 攝影檢定 —— 是非題／每題 2 分、單選題／每題 2 分、多選題／每題 4 分。";
           scoreHtml += "</div>";
 
-          // 底部按鈕組
           scoreHtml += "<div style='display:flex; gap:15px; margin-top:35px;'>";
           scoreHtml += "<button onclick=\"startMockExam('" + currentSubject + "')\" style='background-color:#e67e22; flex:1;'>🔄 再刷一次</button>";
           scoreHtml += "<button onclick='goHome()' style='background-color:#95a5a6; flex:1;'>🔙 返回檢定選擇</button>";
@@ -673,7 +746,6 @@
 
           var html = "";
 
-          // 🌟 1. 初階文編成績表格（橘色主題）
           html += "<div style='margin-bottom: 40px;'>";
           html += "<h3 style='font-size:34px; color:#e67e22; border-left:8px solid #e67e22; padding-left:15px; margin:20px 0 15px 0;'>📝 初階文編 模擬考紀錄</h3>";
           if (editList.length > 0) {
@@ -693,7 +765,6 @@
           }
           html += "</div>";
 
-          // 🌟 2. 初階攝影成績表格（藍色主題）
           html += "<div style='margin-bottom: 20px;'>";
           html += "<h3 style='font-size:34px; color:#2980b9; border-left:8px solid #2980b9; padding-left:15px; margin:20px 0 15px 0;'>📷 初階攝影 模擬考紀錄</h3>";
           if (photoList.length > 0) {
@@ -718,26 +789,6 @@
           document.getElementById('history-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
         }
       }
-
-		// 🌟 計算當前週次 (自動支援測試站快一週)
-      function getDisplayWeek() {
-        var startDate = new Date('2026/08/31 00:00:00'); 
-        var today = new Date();
-        var week = 16;
-        if (today >= startDate) {
-          var diff = today.getTime() - startDate.getTime();
-          var days = Math.floor(diff / (1000 * 60 * 60 * 24));
-          week = 16 + Math.floor(days / 7);
-        }
-        if (week > 21) week = 21;
-
-        // 若為測試站，自動 +1 週
-        if (typeof CURRENT_ENV !== 'undefined' && CURRENT_ENV === 'test') {
-          week = week + 1;
-          if (week > 21) week = 21;
-        }
-        return week;
-      }      
     </script>
   </body>
 </html>
