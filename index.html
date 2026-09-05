@@ -182,7 +182,7 @@
 
     <!-- 登入區塊 -->
     <div id="login-section" class="container">
-      <h2>文教義工檢定模擬考系統</h2>
+      <h2>文教義工檢定模擬考系統 (測試站)</h2>
       <input type="text" id="vName" placeholder="請輸入姓名">
       <input type="text" id="vId" placeholder="請輸入義工編號">
       <button type="button" onclick="login()">登入系統</button>
@@ -259,7 +259,7 @@
     <script>
       const API_URL = "https://script.google.com/macros/s/AKfycbzsrIc1TGYjBIkqm1O4gaSwn3pA2i40HU8rFJHcvqt0P0-yOek0aXhQAErIrFGKx1OWXA/exec";
       
-      // 🌟 環境設定：正式主站填 "prod"，測試站填 "test"
+      // 🌟 測試站環境標籤
       const CURRENT_ENV = "test"; 
 
       let currentVolunteer = {};
@@ -291,33 +291,20 @@
         var banner = document.getElementById('current-week-banner');
         if (!banner) return;
 
-        if (typeof CURRENT_ENV !== 'undefined' && CURRENT_ENV === 'test') {
-          banner.innerHTML = "<span style='display:inline-block; background-color:#e67e22; color:white; padding:8px 24px; border-radius:30px; font-size:26px; font-weight:bold; box-shadow:0 2px 8px rgba(230,126,34,0.3);'>📅 目前進度：第 " + weekNum + " 週模擬考（測試站）</span>";
-        } else {
-          banner.innerHTML = "<span style='display:inline-block; background-color:#2c3e50; color:white; padding:8px 24px; border-radius:30px; font-size:26px; font-weight:bold;'>📅 目前進度：第 " + weekNum + " 週模擬考</span>";
-        }
+        banner.innerHTML = "<span style='display:inline-block; background-color:#e67e22; color:white; padding:8px 24px; border-radius:30px; font-size:26px; font-weight:bold; box-shadow:0 2px 8px rgba(230,126,34,0.3);'>📅 目前進度：第 " + weekNum + " 週模擬考（測試站預先校對）</span>";
       }
 
       window.onload = function() {
-        var now = new Date();
-        var mockStartDate = new Date('2026/09/01 00:00:00');
-
-        // 正式站才受 9/1 時間閘門限制；測試站不受限，隨時可進
-        if (CURRENT_ENV === 'prod' && now < mockStartDate) {
-          document.querySelectorAll('.container').forEach(function(c) { c.style.display = 'none'; });
-          document.getElementById('maintenance-overlay').style.display = 'block';
-          return;
-        }
-
+        // 測試站不受維護圖片阻擋
         document.getElementById('maintenance-overlay').style.display = 'none';
         try {
-          var savedUser = localStorage.getItem('volunteerData');
+          var savedUser = localStorage.getItem('volunteerData_test');
           if (savedUser) {
             currentVolunteer = JSON.parse(savedUser);
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('select-section').style.display = 'block';
             document.getElementById('welcome-msg').innerText = currentVolunteer.volunteerName + " 您好！";
-            updateWeekBanner(); // 🌟 進入首頁更新週次
+            updateWeekBanner();
           } else {
             document.getElementById('login-section').style.display = 'block';
           }
@@ -341,6 +328,7 @@
 
       async function callApi(action, data) {
         try {
+          // 強制帶入測試站環境參數
           var payload = Object.assign({ action: action, env: CURRENT_ENV }, data);
           var response = await fetch(API_URL, {
             method: 'POST',
@@ -367,12 +355,12 @@
 
         if (name === 'edu' && id === 'edu2026') {
           currentVolunteer = { success: true, volunteerId: 'edu2026', volunteerName: 'edu', canEdit: true, canPhoto: true };
-          localStorage.setItem('volunteerData', JSON.stringify(currentVolunteer));
+          localStorage.setItem('volunteerData_test', JSON.stringify(currentVolunteer));
           msg.innerText = "";
           document.getElementById('login-section').style.display = 'none';
           document.getElementById('select-section').style.display = 'block';
           document.getElementById('welcome-msg').innerText = "edu 您好！";
-          updateWeekBanner(); // 🌟 登入成功更新週次
+          updateWeekBanner();
           return;
         }
 
@@ -380,14 +368,14 @@
           var user = await callApi('verifyLogin', { name: name, id: id });
           if (user && user.success) {
             currentVolunteer = user;
-            localStorage.setItem('volunteerData', JSON.stringify(user));
+            localStorage.setItem('volunteerData_test', JSON.stringify(user));
             msg.innerText = "";
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('select-section').style.display = 'block';
             document.getElementById('welcome-msg').innerText = user.volunteerName + " 您好！";
-            updateWeekBanner(); // 🌟 登入成功更新週次
+            updateWeekBanner();
           } else {
-            msg.innerText = (user && user.message) ? user.message : "姓名或編號錯誤";
+            msg.innerText = (user && user.message) ? user.message : "測試站僅允許測試專用帳號登入";
           }
         } catch (e) {
           msg.innerText = e.message;
@@ -397,11 +385,11 @@
       function goHome() {
         document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
         document.getElementById('select-section').style.display = 'block';
-        updateWeekBanner(); // 🌟 返回首頁更新週次
+        updateWeekBanner();
       }
 
       function logout() {
-        localStorage.removeItem('volunteerData');
+        localStorage.removeItem('volunteerData_test');
         currentVolunteer = {};
         document.getElementById('vName').value = "";
         document.getElementById('vId').value = "";
@@ -430,9 +418,14 @@
         document.getElementById('submit-btn').style.display = 'none';
 
         try {
-          var rawQuestions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject, mode: 'quiz' });
-          var boolList = [], singleList = [], multiList = [];
+          var rawQuestions = await callApi('getQuestions', { 
+            vId: currentVolunteer.volunteerId, 
+            subject: subject, 
+            mode: 'quiz',
+            _t: new Date().getTime() // 🌟 防快取時間戳記
+          });
           
+          var boolList = [], singleList = [], multiList = [];
           rawQuestions.forEach(function(q) {
             var fmt = String(q.qFormat || '').trim();
             if (fmt.indexOf('是非') !== -1) boolList.push(q);
@@ -457,7 +450,6 @@
       function renderQuizQuestions() {
         var html = "";
 
-        // 考卷頂部配分說明區
         html += "<div class='exam-score-info'>";
         html += "<b>📝 測驗說明與配分：</b>本試卷共 45 題，滿分 100 分。<br>";
         if (currentSubject === '文編') {
@@ -479,13 +471,11 @@
 
           html += "<div class='q-block' id='q-wrap-" + q.id + "'>";
           
-          // 題號與題型並排
           html += "<div class='q-header'>";
           html += "<span class='q-number'>" + (idx + 1) + ".</span>";
           html += "<span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span>";
           html += "</div>";
 
-          // 題目文字整行獨立展開
           html += "<div class='q-title-text'>" + q.text + "</div>";
 
           ['A', 'B', 'C', 'D', 'E'].forEach(function(k) {
@@ -685,7 +675,6 @@
         try {
           var questions = await callApi('getQuestions', { vId: currentVolunteer.volunteerId, subject: subject, mode: 'all' });
           
-          // 🌟 1. 依「是非題 -> 單選題 -> 多選題」分類排序
           var boolList = [], singleList = [], multiList = [];
           questions.forEach(function(q) {
             var fmt = String(q.qFormat || '').trim();
@@ -700,7 +689,6 @@
 
           var sortedQuestions = [].concat(boolList, singleList, multiList);
 
-          // 🌟 2. 渲染題目
           var html = "";
           sortedQuestions.forEach(function(q, idx) {
             var isMulti = q.qFormat.indexOf('多') !== -1 || q.qFormat.indexOf('複') !== -1;
@@ -709,13 +697,11 @@
 
             html += "<div class='pr-block'>";
             
-            // 題號與題型標籤同一排置頂
             html += "<div class='pr-row'><div class='pr-label'>第 " + (idx + 1) + " 題</div><div class='pr-content'>";
             html += "<span class='q-type-badge " + badgeClass + "'>" + q.qFormat + "</span>";
             html += "<div style='font-weight:bold; font-size:32px; margin-top:10px;'>" + q.text + "</div>";
             html += "</div></div>";
 
-            // 答案選項區
             html += "<div class='pr-row'><div class='pr-label'>答案</div><div class='pr-content'>";
             var dbAns = String(q.answer).toUpperCase();
             ['A', 'B', 'C', 'D', 'E'].forEach(function(k) {
@@ -727,7 +713,6 @@
             });
             html += "</div></div>";
 
-            // 解析區
             var expText = String(q.explanation || "").trim();
             html += "<div class='pr-row' style='border-bottom:none;'><div class='pr-label'>解析</div><div class='pr-content'>";
             if (expText !== "" && expText !== "undefined" && expText !== "null") {
@@ -745,6 +730,70 @@
           document.getElementById('all-container').innerHTML = html;
         } catch (e) {
           document.getElementById('all-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
+        }
+      }
+
+      async function openHistoryView() {
+        var sidebar = document.getElementById('sidebar');
+        if (sidebar && sidebar.classList.contains('open')) toggleSidebar();
+
+        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+        document.getElementById('history-section').style.display = 'block';
+        document.getElementById('history-container').innerHTML = "<div class='loading-container'><div class='spinner'></div>載入歷次模擬考成績中...</div>";
+
+        try {
+          var history = await callApi('getAllHistoryScores', { vId: currentVolunteer.volunteerId });
+          if (!history || history.length === 0) {
+            document.getElementById('history-container').innerHTML = "<p style='text-align:center; font-size:30px; color:#7f8c8d; padding:40px 0;'>尚無模擬考測驗紀錄</p>";
+            return;
+          }
+
+          var editList = history.filter(item => item.subject === '文編');
+          var photoList = history.filter(item => item.subject === '攝影');
+
+          var html = "";
+
+          html += "<div style='margin-bottom: 40px;'>";
+          html += "<h3 style='font-size:34px; color:#e67e22; border-left:8px solid #e67e22; padding-left:15px; margin:20px 0 15px 0;'>📝 初階文編 模擬考紀錄</h3>";
+          if (editList.length > 0) {
+            html += "<table class='history-table'>";
+            html += "<thead><tr style='background-color:#fef5e7;'><th style='color:#d35400;'>測驗時間</th><th style='color:#d35400;'>週次</th><th style='color:#d35400;'>測驗得分</th></tr></thead><tbody>";
+            editList.forEach(function(item) {
+              var scoreColor = item.score === 100 ? '#27ae60' : '#e67e22';
+              html += "<tr>";
+              html += "<td>" + item.date + "</td>";
+              html += "<td>第 " + item.week + " 週</td>";
+              html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
+              html += "</tr>";
+            });
+            html += "</tbody></table>";
+          } else {
+            html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無文編模擬考紀錄</p>";
+          }
+          html += "</div>";
+
+          html += "<div style='margin-bottom: 20px;'>";
+          html += "<h3 style='font-size:34px; color:#2980b9; border-left:8px solid #2980b9; padding-left:15px; margin:20px 0 15px 0;'>📷 初階攝影 模擬考紀錄</h3>";
+          if (photoList.length > 0) {
+            html += "<table class='history-table'>";
+            html += "<thead><tr style='background-color:#ebf5fb;'><th style='color:#2471a3;'>測驗時間</th><th style='color:#2471a3;'>週次</th><th style='color:#2471a3;'>測驗得分</th></tr></thead><tbody>";
+            photoList.forEach(function(item) {
+              var scoreColor = item.score === 100 ? '#27ae60' : '#2980b9';
+              html += "<tr>";
+              html += "<td>" + item.date + "</td>";
+              html += "<td>第 " + item.week + " 週</td>";
+              html += "<td><b style='font-size:34px; color:" + scoreColor + ";'>" + item.score + " 分</b></td>";
+              html += "</tr>";
+            });
+            html += "</tbody></table>";
+          } else {
+            html += "<p style='font-size:26px; color:#95a5a6; padding:10px 0 0 10px;'>尚無攝影模擬考紀錄</p>";
+          }
+          html += "</div>";
+
+          document.getElementById('history-container').innerHTML = html;
+        } catch (e) {
+          document.getElementById('history-container').innerHTML = "<p style='color:red; text-align:center;'>" + e.message + "</p>";
         }
       }
     </script>
