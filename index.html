@@ -266,7 +266,8 @@
 
       async function callApi(action, data) {
         try {
-          var payload = Object.assign({ action: action }, data);
+          // 🌟 自動帶入 env 參數
+          var payload = Object.assign({ action: action, env: CURRENT_ENV }, data);
           var response = await fetch(API_URL, {
             method: 'POST',
             redirect: 'follow',
